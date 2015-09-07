@@ -837,7 +837,7 @@ void init(void);
 void setPixel(int,int);
 void keyboard(unsigned char key, int x, int y);
 void display(void);
-GLfloat r=1,g=0,b=0;
+GLfloat r=0,g=1,b=0;
 int main(int argc, char** argv){
   glutInit(&amp;argc, argv);
   glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
@@ -857,30 +857,52 @@ void init(void){
 }
 
 void display(){
-        glClear(GL_COLOR_BUFFER_BIT);
-        glColor3f (r, g, b);
-        int x1=40,x2=100,y1=200,y2=10,x,y;
-        int dx, dy, pk;
-          setPixel(x1,y1);
-      x=x1;
-          y=y1;
-      dx = x2-x1;
-      dy = y2-y1;
-          pk=2*dy-dx;
-        int i;
-        for(i=1; i&lt;=dx; i++){
-      setPixel(x, y);
-      if(pk&lt;0){
-            pk =pk + 2*dx;
+  glClear(GL_COLOR_BUFFER_BIT);
+  glColor3f (r, g, b);
+  int x1=40,x2=100,y1=200,y2=10,x,y;
+  int dx, dy, pk,troca,s1=1,s2=1;
+  x=x1;
+  y=y1;
+  dx = abs(x2-x1);
+  dy = abs(y2-y1);
+  if(x2-x1&lt;0){
+    s1=-1;
+  }
+  if(y2-y1&lt;0){
+    s2=-1;
+  }
+  if(dy&gt;dx){
+    float temp;
+    temp = dx;
+    dx = dy;
+    dy = temp;
+    troca=1;
+  }
+  else{
+    troca=0;
+  }
+  pk=2*dy-dx;
+  int i;
+  for(i=1; i&lt;=dx; i++){
+  setPixel(x, y);
+    while(pk&gt;=0){
+      if(troca==1){
+        x=x+s1;
           }
           else{
-                        pk=pk+2*dy-2*dx;
-                        ++y;
+                y=y+s2;
           }
-          ++x;
-          setPixel(x,y);
+      pk=pk-2*dx;
         }
-          glFlush();
+    if(troca==1){
+        y=y+s2;
+          }
+          else{
+            x=x+s1;
+          }
+    pk=pk+2*dy;
+  }
+  glFlush();
 }
 void setPixel(int x,int y){
   glBegin(GL_POINTS);
@@ -896,12 +918,12 @@ void keyboard(unsigned char key, int x, int y){
         break;
   case 97:
      r=0,g=0,b=1;
-         glutPostRedisplay();
-         break;
+           glutPostRedisplay();
+           break;
   case 118:
-         r=1,g=0,b=0;
-         glutPostRedisplay();
-         break;
+           r=1,g=0,b=0;
+           glutPostRedisplay();
+           break;
   }
 }</code></pre>
 </div></div>
@@ -934,7 +956,7 @@ void init(void);
 void setPixel(int,int);
 void keyboard(unsigned char key, int x, int y);
 void display(void);
-GLfloat r=1,g=0,b=0;
+GLfloat r=0,g=0,b=1;
 int main(int argc, char** argv){
   glutInit(&amp;argc, argv);
   glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
@@ -962,10 +984,10 @@ void display(){
     int ddF_y = -2 * raio;
     int x = 0;
     int y = raio;
-          setPixel(x0,y0+raio);
-          setPixel(x0,y0-raio);
-          setPixel(x0+raio,y0);
-          setPixel(x0-raio,y0);
+        setPixel(x0,y0+raio);
+        setPixel(x0,y0-raio);
+        setPixel(x0+raio,y0);
+        setPixel(x0-raio,y0);
     while(y&gt;x){
                 if(d&lt;0){
                         d = d + 2*x + 3;
@@ -1023,7 +1045,7 @@ void keyboard(unsigned char key, int x, int y){
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2015-09-07 15:19:44 BRT
+Last updated 2015-09-07 20:52:47 BRT
 </div>
 </div>
 </body>
