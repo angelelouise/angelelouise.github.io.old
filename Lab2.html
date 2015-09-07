@@ -4,7 +4,7 @@
 <head>
 <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
 <meta name="generator" content="AsciiDoc 8.6.9" />
-<title>Laboratórios</title>
+<title>Laboratório 2</title>
 <style type="text/css">
 /* Shared CSS for AsciiDoc xhtml11 and html5 backends */
 
@@ -733,22 +733,297 @@ asciidoc.install();
 </head>
 <body class="article">
 <div id="header">
-<h1>Laboratórios</h1>
+<h1>Laboratório 2</h1>
 </div>
 <div id="content">
-<div id="preamble">
+<div class="sect1">
+<h2 id="_exercício_1">Exercício 1</h2>
 <div class="sectionbody">
-<div class="paragraph"><p><a href="http://angelelouise.github.io/Lab1.html">Laboratório 1</a></p></div>
-<div class="paragraph"><p><a href="http://angelelouise.github.io/Lab2.html">Laboratório 2</a></p></div>
-<div class="paragraph"><p>Laboratório 3</p></div>
-<div class="paragraph"><p>Laboratório 4</p></div>
+<div class="paragraph"><p>Utilizando o programa linha.c como referência, implemente um programa quadrado.c.
+Este programa deverá desenhar numa janela com fundo branco, de dimensões 256x256 pixels, um quadrado vermelho, com vértice superior esquerdo de coordenadas (x, y)= (30, 226) e vértice inferior direito de coordenadas (x, y) = (226, 30).
+Quando a tecla a (keycode=97) for pressionada, o quadrado deverá ficar com a cor azul.
+Quando a tecla v (keycode=118) for pressionada, o quadrado deverá voltar à cor vermelha.</p></div>
+<div class="listingblock">
+<div class="title">Código</div>
+<div class="content">
+<pre><code>#include &lt;GL/glut.h&gt;
+#include &lt;stdlib.h&gt;
+
+void init(void);
+void display(void);
+void keyboard(unsigned char key, int x, int y);
+GLfloat r=1,g=0,b=0;
+int main(int argc, char** argv){
+  glutInit(&amp;argc, argv);
+  glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
+  glutInitWindowSize (256, 256);
+  glutInitWindowPosition (100, 100);
+  glutCreateWindow ("Desenhando uma linha");
+  init();
+  glutDisplayFunc(display);
+  glutKeyboardFunc(keyboard);
+  glutMainLoop();
+  return 0;
+}
+
+void init(void){
+  glClearColor(1.0, 1.0, 1.0, 1.0);
+  glOrtho (0, 256, 0, 256, -1 ,1);
+}
+
+void display(void){
+  int i;
+  glClear(GL_COLOR_BUFFER_BIT);
+  glColor3f (r, g, b);
+  glBegin(GL_LINES);
+  glLineWidth(3.0);
+  glVertex2i(30,226);glVertex2i (226,226);
+  glVertex2i(226,30); glVertex2i(30,30);
+  glVertex2i(226,30);glVertex2i (226,226);
+  glVertex2i(30,30);glVertex2i(30,226);
+  glEnd();
+  glFlush();
+}
+
+void keyboard(unsigned char key, int x, int y){
+  switch (key) {
+  case 27:
+        exit(0);
+        break;
+  case 97:
+     r=0,g=0,b=1;
+         glutPostRedisplay();
+         break;
+  case 118:
+         r=1,g=0,b=0;
+         glutPostRedisplay();
+         break;
+  }
+}</code></pre>
+</div></div>
+<div class="imageblock">
+<div class="content">
+<img src="quadrado1.png" alt="quadrado1.png" />
+</div>
+<div class="title">Figure 1. Resultados</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="quadrado2.png" alt="quadrado2.png" />
+</div>
+<div class="title">Figure 2. Resultados</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_exercício_2">Exercício 2</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Implemente o algoritmo de Bresenham para traçado de linhas, utilizando GL_POINTS como parâmetro da função glBegin().
+Este parâmetro indica que cada vértice deve ser tratado como um ponto simples.
+Utilizando o algoritmo implementado, desenhe uma reta verde do ponto (x, y)=(40, 200) ao ponto (x, y)=(200, 10).</p></div>
+<div class="listingblock">
+<div class="title">Código</div>
+<div class="content">
+<pre><code>#include &lt;GL/glut.h&gt;
+#include &lt;stdlib.h&gt;
+#include&lt;stdio.h&gt;
+#include&lt;stdio.h&gt;
+#include&lt;stdlib.h&gt;
+#include&lt;math.h&gt;
+#include&lt;ctype.h&gt;
+#include&lt;signal.h&gt;
+
+void init(void);
+void setPixel(int,int);
+void keyboard(unsigned char key, int x, int y);
+void display(void);
+GLfloat r=1,g=0,b=0;
+int main(int argc, char** argv){
+  glutInit(&amp;argc, argv);
+  glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
+  glutInitWindowSize (256, 256);
+  glutInitWindowPosition (100, 100);
+  glutCreateWindow ("Desenhando uma linha");
+  init();
+  glutDisplayFunc(display);
+  glutKeyboardFunc(keyboard);
+  glutMainLoop();
+  return 0;
+}
+
+void init(void){
+  glClearColor(1.0, 1.0, 1.0, 1.0);
+  glOrtho (0, 256, 0, 256, -1 ,1);
+}
+
+void display(){
+        glClear(GL_COLOR_BUFFER_BIT);
+        glColor3f (r, g, b);
+        int x1=40,x2=100,y1=200,y2=10,x,y;
+        int dx, dy, pk;
+          setPixel(x1,y1);
+      x=x1;
+          y=y1;
+      dx = x2-x1;
+      dy = y2-y1;
+          pk=2*dy-dx;
+        int i;
+        for(i=1; i&lt;=dx; i++){
+      setPixel(x, y);
+      if(pk&lt;0){
+            pk =pk + 2*dx;
+          }
+          else{
+                        pk=pk+2*dy-2*dx;
+                        ++y;
+          }
+          ++x;
+          setPixel(x,y);
+        }
+          glFlush();
+}
+void setPixel(int x,int y){
+  glBegin(GL_POINTS);
+  glVertex2i(x,y);
+  glEnd();
+
+}
+
+void keyboard(unsigned char key, int x, int y){
+  switch (key) {
+  case 27:
+        exit(0);
+        break;
+  case 97:
+     r=0,g=0,b=1;
+         glutPostRedisplay();
+         break;
+  case 118:
+         r=1,g=0,b=0;
+         glutPostRedisplay();
+         break;
+  }
+}</code></pre>
+</div></div>
+<div class="imageblock">
+<div class="content">
+<img src="brelinha.png" alt="brelinha.png" />
+</div>
+<div class="title">Figure 3. Resultados</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_exercício_3">Exercício 3</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Implemente o algoritmo de Bresenham para traçado de circunferências, utilizando GL_POINTS como parâmetro da função glBegin().
+Utilizando o algoritmo implementado, desenhe uma circunferência azul de raio r=50, centrada no ponto (x, y) = (128, 128).</p></div>
+<div class="listingblock">
+<div class="title">Código</div>
+<div class="content">
+<pre><code>#include &lt;GL/glut.h&gt;
+#include &lt;stdlib.h&gt;
+#include&lt;stdio.h&gt;
+#include&lt;stdio.h&gt;
+#include&lt;stdlib.h&gt;
+#include&lt;math.h&gt;
+#include&lt;ctype.h&gt;
+#include&lt;signal.h&gt;
+
+void init(void);
+void setPixel(int,int);
+void keyboard(unsigned char key, int x, int y);
+void display(void);
+GLfloat r=1,g=0,b=0;
+int main(int argc, char** argv){
+  glutInit(&amp;argc, argv);
+  glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
+  glutInitWindowSize (256, 256);
+  glutInitWindowPosition (100, 100);
+  glutCreateWindow ("Desenhando uma linha");
+  init();
+  glutDisplayFunc(display);
+  glutKeyboardFunc(keyboard);
+  glutMainLoop();
+  return 0;
+}
+
+void init(void){
+  glClearColor(1.0, 1.0, 1.0, 1.0);
+  glOrtho (0, 256, 0, 256, -1 ,1);
+}
+
+void display(){
+        glClear(GL_COLOR_BUFFER_BIT);
+        glColor3f (r, g, b);
+        int x0=128,y0=128,raio=50;
+        int d = 1 - raio;
+    int ddF_x = 0;
+    int ddF_y = -2 * raio;
+    int x = 0;
+    int y = raio;
+          setPixel(x0,y0+raio);
+          setPixel(x0,y0-raio);
+          setPixel(x0+raio,y0);
+          setPixel(x0-raio,y0);
+    while(y&gt;x){
+                if(d&lt;0){
+                        d = d + 2*x + 3;
+                x = x + 1;
+                }
+                else{
+                d = d + 2*(x-y) + 5;
+                x = x + 1;
+                y = y - 1;
+                }
+            setPixel(x0 + x, y0 + y);
+                setPixel(x0 - x, y0 + y);
+                setPixel(x0 + x, y0 - y);
+                setPixel(x0 - x, y0 - y);
+                setPixel(x0 + y, y0 + x);
+                setPixel(x0 - y, y0 + x);
+                setPixel(x0 + y, y0 - x);
+                setPixel(x0 - y, y0 - x);
+        }
+
+          glFlush();
+}
+void setPixel(int x,int y){
+  glBegin(GL_POINTS);
+  glVertex2i(x,y);
+  glEnd();
+
+}
+
+void keyboard(unsigned char key, int x, int y){
+  switch (key) {
+  case 27:
+        exit(0);
+        break;
+  case 97:
+     r=0,g=0,b=1;
+         glutPostRedisplay();
+         break;
+  case 118:
+         r=1,g=0,b=0;
+         glutPostRedisplay();
+         break;
+  }
+}</code></pre>
+</div></div>
+<div class="imageblock">
+<div class="content">
+<img src="brecirc.png" alt="brecirc.png" />
+</div>
+<div class="title">Figure 4. Resultados</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2015-09-07 15:21:18 BRT
+Last updated 2015-09-07 15:19:44 BRT
 </div>
 </div>
 </body>
