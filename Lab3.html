@@ -4,7 +4,7 @@
 <head>
 <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
 <meta name="generator" content="AsciiDoc 8.6.9" />
-<title>Laboratórios</title>
+<title>Laboratório 3</title>
 <style type="text/css">
 /* Shared CSS for AsciiDoc xhtml11 and html5 backends */
 
@@ -733,22 +733,407 @@ asciidoc.install();
 </head>
 <body class="article">
 <div id="header">
-<h1>Laboratórios</h1>
+<h1>Laboratório 3</h1>
 </div>
 <div id="content">
-<div id="preamble">
+<div class="sect1">
+<h2 id="_exercício_1">Exercício 1</h2>
 <div class="sectionbody">
-<div class="paragraph"><p><a href="http://angelelouise.github.io/Lab1.html">Laboratório 1</a></p></div>
-<div class="paragraph"><p><a href="http://angelelouise.github.io/Lab2.html">Laboratório 2</a></p></div>
-<div class="paragraph"><p><a href="http://angelelouise.github.io/Lab3.html">Laboratório 3</a></p></div>
-<div class="paragraph"><p><a href="http://angelelouise.github.io/Lab4.html">Laboratório 4</a></p></div>
+<div class="paragraph"><p>Utilizando o programa preenchimento.c como referência, implemente um programa selecao.c.
+Este programa deverá desenhar numa janela com fundo branco, de dimensões 256x256 pixels, quatro polígonos com as mesmas coordenadas dos polígonos do programa de referência.
+Todos os polígonos devem estar inicialmente preenchidos de amarelo e com bordas pretas.
+Quando o usuário clicar com o botão esquerdo do mouse dentro de um dos polígonos, a cor de preechimento deste polígono deverá mudar para uma cor aleatória.
+Quando a tecla b (keycode=98) for pressionada, o programa passará a mudar as cores das bordas e não mais dos fundos dos polígonos.
+Quando a tecla f (keycode=102) for pressionada, o programa passará a mudar as cores dos fundos dos polígonos e não mais das bordas.</p></div>
+<div class="listingblock">
+<div class="title">Código</div>
+<div class="content">
+<pre><code>#include &lt;GL/glut.h&gt;
+#include &lt;stdlib.h&gt;
+
+GLubyte tux[] = {
+ 0x0,  0x0,  0x0,  0x0,
+ 0x0,  0x0,  0x0,  0x0,
+ 0x0,  0x0,  0x0,  0x0,
+ 0x0,  0x0,  0x0,  0x0,
+ 0x0,  0x0,  0x0,  0x0,
+ 0x0,  0x0,  0x0,  0x0,
+ 0x0,  0x7f,  0xfe,  0x0,
+ 0x0,  0xc4,  0x23,  0x0,
+ 0x1,  0x83,  0x21,  0x80,
+ 0x1,  0x7,  0xe0,  0x80,
+ 0x1,  0x7,  0xf0,  0x80,
+ 0x1,  0x8f,  0xf9,  0x80,
+ 0x0,  0xff,  0xff,  0x0,
+ 0x0,  0x4f,  0xf1,  0x0,
+ 0x0,  0x6f,  0xf1,  0x0,
+ 0x0,  0x2f,  0xf3,  0x0,
+ 0x0,  0x27,  0xe2,  0x0,
+ 0x0,  0x30,  0x66,  0x0,
+ 0x0,  0x1b,  0x1c,  0x0,
+ 0x0,  0xb,  0x88,  0x0,
+ 0x0,  0xb,  0x98,  0x0,
+ 0x0,  0x8,  0x18,  0x0,
+ 0x0,  0xa,  0x90,  0x0,
+ 0x0,  0x8,  0x10,  0x0,
+ 0x0,  0xc,  0x30,  0x0,
+ 0x0,  0x6,  0x60,  0x0,
+ 0x0,  0x3,  0xc0,  0x0,
+ 0x0,  0x0,  0x0,  0x0,
+ 0x0,  0x0,  0x0,  0x0,
+ 0x0,  0x0,  0x0,  0x0,
+ 0x0,  0x0,  0x0,  0x0,
+ 0x0,  0x0,  0x0,  0x0
+};
+
+GLfloat rl[4],gl[4],bl[4],rf[4],gf[4],bf[4];
+int escolha=0;
+
+void init(void);
+void display(void);
+void keyboard(unsigned char key, int x, int y);
+void mouse(int button, int state, int x, int y);
+
+int main(int argc, char** argv){
+  glutInit(&amp;argc, argv);
+  glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB);
+  glutInitWindowSize (256, 256);
+  glutInitWindowPosition (100, 100);
+  glutCreateWindow ("Preenchendo regiões");
+  init();
+  glutDisplayFunc(display);
+  glutKeyboardFunc(keyboard);
+  glutMouseFunc(mouse);
+  glutMainLoop();
+  return 0;
+}
+
+void init(void){
+  int i;
+  glClearColor(1.0, 1.0, 1.0, 1.0);
+  glOrtho (0, 256, 0, 256, -1 ,1);
+  for(i=0;i&lt;4;i++){
+        rf[i]=1; gf[i]=1; bf[i]=0;
+        rl[i]=0; gl[i]=0; bl[i]=0;
+  }
+}
+
+void display(void){
+  int i;
+  glClear(GL_COLOR_BUFFER_BIT);
+  glDisable(GL_POLYGON_STIPPLE);
+
+  //figura 0
+  glPolygonMode(GL_BACK, GL_FILL);
+  glColor3f(rf[2], gf[2], bf[2]);
+  glBegin(GL_POLYGON);
+  glVertex2i(30,113); glVertex2i(113,113);
+  glVertex2i(113,30); glVertex2i(30,30);
+  glEnd();
+
+  glPolygonMode(GL_BACK, GL_LINE);
+  glLineWidth(3.0);
+  glColor3f(rl[2], gl[2], bl[2]);
+  glBegin(GL_POLYGON);
+  glVertex2i(30,113); glVertex2i(113,113);
+  glVertex2i(113,30); glVertex2i(30,30);
+  glEnd();
+
+  //figura 1
+  glPolygonMode(GL_BACK, GL_FILL);
+  glColor3f(rf[3], gf[3], bf[3]);
+  glBegin(GL_POLYGON);
+  glVertex2i(143,113); glVertex2i(226,113);
+  glVertex2i(226,30); glVertex2i(143,30);
+  glEnd();
+
+  glPolygonMode(GL_BACK, GL_LINE);
+  glLineWidth(3.0);
+  glColor3f(rl[3], gl[3], bl[3]);
+  glBegin(GL_POLYGON);
+  glVertex2i(143,113); glVertex2i(226,113);
+  glVertex2i(226,30); glVertex2i(143,30);
+  glEnd();
+
+  //figura 2
+  glPolygonMode(GL_BACK, GL_FILL);
+  glColor3f(rf[0], gf[0], bf[0]);
+  glBegin(GL_POLYGON);
+  glVertex2i(30,226);  glVertex2i(113,226);
+  glVertex2i(113,143); glVertex2i(30,143);
+  glEnd();
+
+  glPolygonMode(GL_BACK, GL_LINE);
+  glLineWidth(3.0);
+  glColor3f(rl[0], gl[0], bl[0]);
+  glBegin(GL_POLYGON);
+  glVertex2i(30,226);  glVertex2i(113,226);
+  glVertex2i(113,143); glVertex2i(30,143);
+  glEnd();
+
+  //figura 3
+  glPolygonMode(GL_BACK, GL_FILL);
+  glColor3f(rf[1], gf[1], bf[1]);
+  glBegin(GL_POLYGON);
+  glVertex2i(143,226); glVertex2i(226,226);
+  glVertex2i(226,143); glVertex2i(143,143);
+  glEnd();
+
+  glPolygonMode(GL_BACK, GL_LINE);
+  glLineWidth(3.0);
+  glColor3f(rl[1], gl[1], bl[1]);
+  glBegin(GL_POLYGON);
+  glVertex2i(143,226); glVertex2i(226,226);
+  glVertex2i(226,143); glVertex2i(143,143);
+  glEnd();
+
+
+  glFlush();
+  glutSwapBuffers();
+}
+
+void keyboard(unsigned char key, int x, int y){
+  switch (key) {
+  case 98:
+        escolha=1; //borda muda;
+        break;
+  case 102:
+        escolha=0; //fundo muda;
+        break;
+  }
+}
+
+void mouse(int button, int state, int x, int y){
+  switch (button) {
+  case GLUT_LEFT_BUTTON:
+        if (state == GLUT_DOWN) {
+
+                if(x&lt;=113 &amp;&amp; x&gt;=30 &amp;&amp; y&lt;=113 &amp;&amp; y&gt;=30){
+                        if(escolha==0){
+                                rf[0]=(GLfloat)rand()/(RAND_MAX+1.0);
+                                gf[0]=(GLfloat)rand()/(RAND_MAX+1.0);
+                                bf[0]=(GLfloat)rand()/(RAND_MAX+1.0);
+                        }
+                        else{
+                                rl[0]=(GLfloat)rand()/(RAND_MAX+1.0);
+                                gl[0]=(GLfloat)rand()/(RAND_MAX+1.0);
+                                bl[0]=(GLfloat)rand()/(RAND_MAX+1.0);
+                        }
+
+                }
+                if(x&lt;=226 &amp;&amp; x&gt;=143 &amp;&amp; y&lt;=113 &amp;&amp; y&gt;=30){
+                        if(escolha==0){
+                                rf[1]=(GLfloat)rand()/(RAND_MAX+1.0);
+                                gf[1]=(GLfloat)rand()/(RAND_MAX+1.0);
+                                bf[1]=(GLfloat)rand()/(RAND_MAX+1.0);
+                        }
+                        else{
+                                rl[1]=(GLfloat)rand()/(RAND_MAX+1.0);
+                                gl[1]=(GLfloat)rand()/(RAND_MAX+1.0);
+                                bl[1]=(GLfloat)rand()/(RAND_MAX+1.0);
+                        }
+
+
+                }
+                if(x&lt;=113 &amp;&amp; x&gt;=30 &amp;&amp; y&lt;=226 &amp;&amp; y&gt;=143){
+                        if(escolha==0){
+                                rf[2]=(GLfloat)rand()/(RAND_MAX+1.0);
+                                gf[2]=(GLfloat)rand()/(RAND_MAX+1.0);
+                                bf[2]=(GLfloat)rand()/(RAND_MAX+1.0);
+                        }
+                        else{
+                                rl[2]=(GLfloat)rand()/(RAND_MAX+1.0);
+                                gl[2]=(GLfloat)rand()/(RAND_MAX+1.0);
+                                bl[2]=(GLfloat)rand()/(RAND_MAX+1.0);
+                        }
+
+
+                }
+                if(x&lt;=226 &amp;&amp; x&gt;=143 &amp;&amp; y&lt;=226 &amp;&amp; y&gt;=143){
+                        if(escolha==0){
+                                rf[3]=(GLfloat)rand()/(RAND_MAX+1.0);
+                                gf[3]=(GLfloat)rand()/(RAND_MAX+1.0);
+                                bf[3]=(GLfloat)rand()/(RAND_MAX+1.0);
+                        }
+                        else{
+                                rl[3]=(GLfloat)rand()/(RAND_MAX+1.0);
+                                gl[3]=(GLfloat)rand()/(RAND_MAX+1.0);
+                                bl[3]=(GLfloat)rand()/(RAND_MAX+1.0);
+                        }
+
+
+                }
+        glutPostRedisplay();
+        }
+        break;
+  }
+}</code></pre>
+</div></div>
+<div class="imageblock">
+<div class="content">
+<img src="selecao1.png" alt="selecao1.png" />
+</div>
+<div class="title">Figure 1. Resultado inicial</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="selecao2.png" alt="selecao2.png" />
+</div>
+<div class="title">Figure 2. Resultado mudando os fundos</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="selecao3.png" alt="selecao3.png" />
+</div>
+<div class="title">Figure 3. Resultado apertando a tecla b</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="selecao4.png" alt="selecao4.png" />
+</div>
+<div class="title">Figure 4. Resultado apertando a tecla f</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_exercício_2">Exercício 2</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Repita o item anterior utilizando buffer simples e comente os resultados obtidos.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>        O uso de buffer simples faz com que todos os objetos sejam desenhados no buffer principal, para essa aplicação os resultados entre buffer duplo e simples foram os mesmos, entretanto o uso de buffer duplo evita efeitos indesejáveis,cintilações e a visualização do processo de desenho.</code></pre>
+</div></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_exercício_3">Exercício 3</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Crie um padrão de preenchimento com as iniciais dos seu nome e sobre nome, por exemplo, AB, para Agostinho Brito.
+Implemente um programa que desenhe em uma janela de fundo branco de dimensões 300x300 pixels um hexágono com bounding box de dimensões 200x200 pixels.
+O hexágono deve estar centrado na tela e preenchido com cor azul, utilize este padrão de preenchimento criado.</p></div>
+<div class="listingblock">
+<div class="title">Código</div>
+<div class="content">
+<pre><code>#include &lt;GL/glut.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;math.h&gt;
+GLubyte tax[] = {
+ 0x0,  0x0,  0x0,  0x0,
+ 0x0,  0x0,  0x0,  0x0,
+ 0x0,  0x0,  0x0,  0x0,
+ 0x0,  0x0,  0x0,  0x0,
+ 0x0,  0x0,  0x0,  0x0,
+ 0x0,  0x0,  0x0,  0x0,
+ 0x10,  0x10,  0x80,  0x0,
+ 0x10,  0x10,  0x0,  0x0,
+ 0x10,  0x10,  0x0,  0x0,
+ 0x10,  0x10,  0x0,  0x0,
+ 0x10,  0x10,  0x0,  0x0,
+ 0x1f,  0xf0,  0x7f,  0x80,
+ 0x10,  0x10,  0x80,  0x0,
+ 0x10,  0x10,  0x80,  0x0,
+ 0x10,  0x10,  0x80,  0x0,
+ 0x10,  0x10,  0x80,  0x0,
+ 0x1f,  0xf0,  0x0,  0x0,
+ 0x0,  0x0,  0x80,  0x0,
+ 0x0,  0x0,  0x80,  0x0,
+ 0x0,  0x0,  0x80,  0x0,
+ 0x0,  0x0,  0x80,  0x0,
+ 0x0,  0x0,  0x80,  0x0,
+ 0x0,  0x0,  0x80,  0x0,
+ 0x0,  0x0,  0x0,  0x0,
+ 0x0,  0x0,  0x0,  0x0,
+ 0x0,  0x0,  0x0,  0x0,
+ 0x0,  0x0,  0x0,  0x0,
+ 0x0,  0x0,  0x0,  0x0,
+ 0x0,  0x0,  0x0,  0x0,
+ 0x0,  0x0,  0x0,  0x0,
+ 0x0,  0x0,  0x0,  0x0,
+ 0x0,  0x0,  0x0,  0x0
+};
+
+GLfloat r,g,b;
+
+void init(void);
+void display(void);
+void keyboard(unsigned char key, int x, int y);
+void mouse(int button, int state, int x, int y);
+
+int main(int argc, char** argv){
+  glutInit(&amp;argc, argv);
+  glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB);
+  glutInitWindowSize (256, 256);
+  glutInitWindowPosition (100, 100);
+  glutCreateWindow ("Preenchendo regiões");
+  init();
+  glutDisplayFunc(display);
+  glutKeyboardFunc(keyboard);
+  glutMouseFunc(mouse);
+  glutMainLoop();
+  return 0;
+}
+
+void init(void){
+  glClearColor(1.0, 1.0, 1.0, 0);
+  glOrtho (0, 1, 0, 1, -1 ,1);
+}
+
+void display(void){
+  glEnable(GL_POLYGON_STIPPLE);
+  glColor3f(0.0, 0.0, 1.0);
+  glPolygonStipple(tax);
+  glBegin(GL_POLYGON);
+  glVertex2f(0.25,0.25);
+  glVertex2f(0.75,0.25);
+  glVertex2f(0.75,0.75);
+  glVertex2f(0.25,0.75);
+  glEnd;
+
+  /*for(int i = 0; i &lt; 6; i++) {
+  float v1 = sin(i *M_PI/ 6) * 0.1;
+  float v2 = cos(i *M_PI/ 6) * 0.1;
+  glVertex2d(v1, v2);
+  }
+  glEnd();*/
+
+  glFlush();
+  glutSwapBuffers();
+}
+
+void keyboard(unsigned char key, int x, int y){
+  switch (key) {
+  case 27:
+        exit(0);
+        break;
+  }
+}
+
+void mouse(int button, int state, int x, int y){
+  switch (button) {
+  case GLUT_LEFT_BUTTON:
+        if (state == GLUT_DOWN) {
+          r=(GLfloat)rand()/(RAND_MAX+1.0);
+          g=(GLfloat)rand()/(RAND_MAX+1.0);
+          b=(GLfloat)rand()/(RAND_MAX+1.0);
+          glutPostRedisplay();
+        }
+        break;
+  }
+}</code></pre>
+</div></div>
+<div class="imageblock">
+<div class="content">
+<img src="iniciais.png" alt="iniciais.png" />
+</div>
+<div class="title">Figure 5. Resultados</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2015-09-07 16:15:21 BRT
+Last updated 2015-09-07 16:14:01 BRT
 </div>
 </div>
 </body>

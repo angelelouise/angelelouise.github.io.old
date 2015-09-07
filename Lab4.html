@@ -4,7 +4,7 @@
 <head>
 <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
 <meta name="generator" content="AsciiDoc 8.6.9" />
-<title>Laboratórios</title>
+<title>Laboratório 4</title>
 <style type="text/css">
 /* Shared CSS for AsciiDoc xhtml11 and html5 backends */
 
@@ -733,22 +733,198 @@ asciidoc.install();
 </head>
 <body class="article">
 <div id="header">
-<h1>Laboratórios</h1>
+<h1>Laboratório 4</h1>
 </div>
 <div id="content">
-<div id="preamble">
+<div class="sect1">
+<h2 id="_exercício_1">Exercício 1</h2>
 <div class="sectionbody">
-<div class="paragraph"><p><a href="http://angelelouise.github.io/Lab1.html">Laboratório 1</a></p></div>
-<div class="paragraph"><p><a href="http://angelelouise.github.io/Lab2.html">Laboratório 2</a></p></div>
-<div class="paragraph"><p><a href="http://angelelouise.github.io/Lab3.html">Laboratório 3</a></p></div>
-<div class="paragraph"><p><a href="http://angelelouise.github.io/Lab4.html">Laboratório 4</a></p></div>
+<div class="paragraph"><p>Utilizando o programa braco.c como referência, implemente um programa braco-garra.c.
+Este programa deverá acrescente ao braço robótico uma garra com três dedos, sendo um indicador, um médio e um polegar, como mostra a Figura 4.3.
+O usuário deverá poder rotacionar o dedo indicador com as teclas i e I, nos sentidos horário e anti-horário. Da mesma forma, as teclas p P deverão rotacionar o polegar, e teclas m M, o dedo médio do robô.</p></div>
+<div class="listingblock">
+<div class="title">Código</div>
+<div class="content">
+<pre><code>#include &lt;GL/glut.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+static int shoulder = 0, elbow = 0,indicador=0, medio=0, polegar=0;
+
+void init(void){
+  glClearColor (0.0, 0.0, 0.0, 0.0);
+}
+
+void display(void){
+  glClear (GL_COLOR_BUFFER_BIT);
+  glPushMatrix();
+
+  /* origem posicionada no ombro */
+  glTranslatef (-1.0, 0.0, 0.0);
+  glRotatef ((GLfloat) shoulder, 0.0, 0.0, 1.0);
+
+  /* origem posicionada no centro do braço */
+  glTranslatef (1.0, 0.0, 0.0);
+  glPushMatrix();
+  glScalef (2.0, 0.4, 1.0);
+  glutWireCube (1.0);
+  glPopMatrix();
+
+  /* origem posicionada no cotovelo */
+  glTranslatef (1.0, 0.0, 0.0);
+  glRotatef ((GLfloat) elbow, 0.0, 0.0, 1.0);
+  glTranslatef (1.0, 0.0, 0.0);
+  glPushMatrix();
+  glScalef (2.0, 0.4, 1.0);
+  glutWireCube (1.0);
+  glPopMatrix();
+  //indicador
+  glTranslatef (1.0, 0, 0);
+  glRotatef ((GLfloat) indicador, 0.0, 0.0, 1.0);
+  glTranslatef (0.25, 0, -0.5);
+  glPushMatrix();
+  glScalef (0.5, 0.1, 0.1);
+  glutWireCube (1.0);
+  glPopMatrix();
+  /* origem volta para o sistema de coordenadas original */
+  glPopMatrix();
+  glutSwapBuffers();
+}
+
+void reshape (int w, int h){
+  glViewport (0, 0, (GLsizei) w, (GLsizei) h);
+  glMatrixMode (GL_PROJECTION);
+  glLoadIdentity ();
+  gluPerspective(65.0, (GLfloat) w/(GLfloat) h, 1.0, 20.0);
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  glTranslatef (0.0, 0.0, -5.0);
+}
+
+void keyboard (unsigned char key, int x, int y){
+  switch (key) {
+  case 's':
+    shoulder = (shoulder + 5) % 360;
+    glutPostRedisplay();
+    break;
+  case 'S':
+    shoulder = (shoulder - 5) % 360;
+    glutPostRedisplay();
+    break;
+  case 'e':
+    elbow = (elbow + 5) % 360;
+    glutPostRedisplay();
+    break;
+  case 'E':
+    elbow = (elbow - 5) % 360;
+    glutPostRedisplay();
+    break;
+  case 'i':
+    indicador = (indicador + 5) % 360;
+    //printf("%i \n",indicador);
+    if(indicador&gt;90){
+        indicador=90;
+        }
+    if(indicador&lt;-90){
+        indicador=-90;
+        }
+    glutPostRedisplay();
+    break;
+  case 'I':
+    indicador = (indicador - 5) % 360;
+    if(indicador&gt;90){
+        indicador=90;
+        }
+    if(indicador&lt;-90){
+        indicador=-90;
+        }
+    glutPostRedisplay();
+  case 'm':
+    medio = (medio + 5) % 360;
+    if(medio&gt;90){
+        medio=90;
+        }
+    if(medio&lt;-90){
+        medio=-90;
+        }
+    glutPostRedisplay();
+    break;
+  case 'M':
+    medio = (medio - 5) % 360;
+        if(medio&gt;90){
+        medio=90;
+        }
+    if(medio&lt;-90){
+        medio=-90;
+        }
+    glutPostRedisplay();
+    break;
+  case 'p':
+    polegar = (polegar + 5) % 360;
+    if(polegar&gt;90){
+        polegar=90;
+        }
+    if(polegar&lt;-90){
+        polegar=-90;
+        }
+    glutPostRedisplay();
+    break;
+  case 'P':
+    polegar = (polegar - 5) % 360;
+        if(polegar&gt;90){
+        polegar=90;
+        }
+    if(polegar&lt;-90){
+        polegar=-90;
+        }
+    glutPostRedisplay();
+    break;
+  case 27:
+    exit(0);
+    break;
+  default:
+    break;
+  }
+}
+
+int main(int argc, char** argv){
+  glutInit(&amp;argc, argv);
+  glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB);
+  glutInitWindowSize (500, 500);
+  glutInitWindowPosition (100, 100);
+  glutCreateWindow (argv[0]);
+  init ();
+  glutDisplayFunc(display);
+  glutReshapeFunc(reshape);
+  glutKeyboardFunc(keyboard);
+  glutMainLoop();
+  return 0;
+}</code></pre>
+</div></div>
+<div class="imageblock">
+<div class="content">
+<img src="braco-garra1.png" alt="braco-garra1.png" />
+</div>
+<div class="title">Figure 1. Resultados indicador</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="braco-garra2.png" alt="braco-garra2.png" />
+</div>
+<div class="title">Figure 2. Resultados indicador dobrado ao máximo</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="braco-garra3.png" alt="braco-garra3.png" />
+</div>
+<div class="title">Figure 3. Resultados indicador dobrado ao máximo</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2015-09-07 16:15:21 BRT
+Last updated 2015-09-07 16:29:11 BRT
 </div>
 </div>
 </body>
