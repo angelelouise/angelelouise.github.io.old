@@ -828,14 +828,16 @@ Comente a linha glShadeModel(GL_FLAT) para que o feito de degradê possa ser vis
 <pre><code>#include &lt;GL/glut.h&gt;
 #include &lt;stdlib.h&gt;
 #include &lt;stdio.h&gt;
+#include &lt;math.h&gt;
+
+#define PI 3.14159265
 
 void display(void);
 void timer(int);
 void keyboard(unsigned char key, int x, int y);
 
 /* cores do quadrado */
-GLfloat r=1.0, g=0.5, b=0.0;
-
+GLfloat r=1.0, g=0.5, b=0.0, h=0;
 
 int main(int argc, char** argv){
   glutInit(&amp;argc, argv);
@@ -846,33 +848,81 @@ int main(int argc, char** argv){
   // inicia um temporizador. após 33ms ativa a funcao timer
   glutTimerFunc(33, timer, 1);
   glClearColor(1.0, 1.0, 1.0, 0.0);
-  //glShadeModel (GL_FLAT);
   glOrtho (0, 1, 0, 1, -1 ,1);
   glutDisplayFunc(display);
   glutMainLoop();
-
   return 0;
 }
 
 void timer(int value){
-  r=r+0.01;
-  g=g+0.01;
-  b=b+0.01;
-  if(r&gt;1) r=0;
-  if(g&gt;1) g=0;
-  if(b&gt;1) b=0;
+  h=h+1;
+  if(h&gt;359){
+    h=0;
+  }
   glutPostRedisplay();
   glutTimerFunc(33, timer, 1);
+}
+
+double getRadiano(GLfloat h){
+  GLfloat val = PI / 180.0;
+  return (double) h*val;
+}
+
+GLfloat HSI(GLfloat h, int cor, int vertice){
+  GLfloat i=0.6, s=1, raux, gaux, baux, haux;
+  if(h&gt;=360){
+    haux=h-360;
+  }else{
+    haux=h;
+  }
+
+  if(haux&gt;=0 &amp;&amp; haux&lt;120){
+    haux=h;
+    baux=i*(1-s);
+    raux=i*(1+(s*cos(getRadiano(haux))/(cos(getRadiano(60.0-haux)))));
+    gaux=3*i-(raux+baux);
+  }
+  else if(haux&gt;=120 &amp;&amp; haux&lt;240){
+    haux=h-120;
+    raux=i*(1-s);
+    gaux=i*(1+(s*cos(getRadiano(haux))/(cos(getRadiano(60.0-haux)))));
+    baux=3*i-(raux+gaux);
+  }
+  else if(haux&gt;=240){
+    haux=h-240;
+    gaux=i*(1-s);
+    baux=i*(1+(s*cos(getRadiano(haux))/(cos(getRadiano(60.0-haux)))));
+    raux=3*i-(baux+gaux);
+  }
+  if(cor==1){
+    return raux;
+  }
+  else if(cor==2){
+    return gaux;
+  }
+  else{
+    return baux;
+  }
 }
 
 void display(void){
   int i;
   glClear(GL_COLOR_BUFFER_BIT);
+  glColor3f (r, g, b);
   glBegin(GL_POLYGON);
-  glColor3f(r, 0.0, 0.0); glVertex2f(0.25,0.25);
-  glColor3f(0.0, g, 0.0); glVertex2f(0.75,0.25);
-  glColor3f(0.0, 0.0, b); glVertex2f(0.75,0.75);
-  glColor3f(r, g, 0.0); glVertex2f(0.25,0.75);
+
+  glColor3f (HSI(h+180, 1, 3), HSI(h+180, 2, 3), HSI(h+180, 3, 3));
+  glVertex2f(0.25,0.25);
+
+  glColor3f (HSI(h+270, 1, 4), HSI(h+270, 2, 4), HSI(h+270, 3, 4));
+  glVertex2f(0.75,0.25);
+
+  glColor3f (HSI(h, 1, 1), HSI(h, 2, 1), HSI(h, 3, 1));
+  glVertex2f(0.75,0.75);
+
+  glColor3f (HSI(h+90, 1, 2), HSI(h+90, 2, 2), HSI(h+90, 3, 2));
+  glVertex2f(0.25,0.75);
+
   glEnd();
   glFlush();
 }</code></pre>
@@ -895,7 +945,7 @@ void display(void){
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2015-09-07 05:09:29 BRT
+Last updated 2015-09-07 21:20:27 BRT
 </div>
 </div>
 </body>
