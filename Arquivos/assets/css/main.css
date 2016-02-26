@@ -239,8 +239,13 @@ img {
 }
 /* Header Section End */
 /* Works Section Start */
+#works .section-title {
+  color: #ffffff;
+}
 #works {
-  background: #ffffff;
+  background: url(../img/backgrounds/bg.jpg);
+  background-size: cover;
+  color: #ffffff;
   width: 100%;
 }
 #works .grid-left .large {
@@ -336,6 +341,15 @@ img {
   font-size: 24px;
   color: #82bc00;
 }
+#works .list-works {
+  font-size: 20px;
+  text-align: center;
+  color: #ffffff;
+}
+#works .list-works:hover{
+  color: #ffffff;
+}
+
 #works .large:hover .overlay,
 #works .grid-box:hover .overlay {
   opacity: 1;

@@ -239,8 +239,13 @@ img {
 }
 /* Header Section End */
 /* Works Section Start */
+#works .section-title {
+  color: #ffffff;
+}
 #works {
-  background: #ffffff;
+  background: url(../img/backgrounds/bg.jpg);
+  background-size: cover;
+  color: #ffffff;
   width: 100%;
 }
 #works .grid-left .large {
