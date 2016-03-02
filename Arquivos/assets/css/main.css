@@ -243,8 +243,8 @@ img {
   color: #ffffff;
 }
 #works {
-  background: url(../img/backgrounds/bg.jpg);
-  background-size: cover;
+  /*background: url(../img/backgrounds/bg.jpg);*/
+  /*background-size: cover;*/
   color: #ffffff;
   width: 100%;
 }
@@ -344,12 +344,8 @@ img {
 #works .list-works {
   font-size: 20px;
   text-align: center;
-  color: #ffffff;
+  color: #333;
 }
-#works .list-works:hover{
-  color: #ffffff;
-}
-
 #works .large:hover .overlay,
 #works .grid-box:hover .overlay {
   opacity: 1;
