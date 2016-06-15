@@ -1,9 +1,7 @@
-= APLICATIVO ANDROID DE DETECÇÃO E RASTREAMENTO DE FACE HUMANA EM TEMPO REAL
-UTILIZANDO OPENCV
+= APLICATIVO ANDROID DE DETECÇÃO E RASTREAMENTO DE FACE HUMANA EM TEMPO REAL UTILIZANDO OPENCV
 
 :Author:    Victor Mafra e Angele Louise
-:Email:     <angelealst@hotmail.com>
-:Email:     <vick.vems@gmail.com>
+:Email:     <angelealst@hotmail.com e vick.vems@gmail.com>
 
 == 1. INTRODUÇÃO
 O seguinte trabalho trata sobre experiência realizada em plataforma Android com finalidade de desenvolver um aplicativo para detecção e rastreamento de faces em tempo real utilizando OpenCV(biblioteca multiplataforma de computação visual) para o processamento de vídeo. Para detectar faces foi feito uso de classificadores do tipo LBP e Haar e para o rastreamento o método de Lucas-Kanade, que são recursos oferecidos pela biblioteca supracitada. 
