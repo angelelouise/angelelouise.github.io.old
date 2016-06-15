@@ -97,7 +97,7 @@ O componente utilizado no experimento foi do tipo Activity. Basicamente em toda 
 No método *onCreate(Bundle)* toda a atividade será inicializada e configurada, junto com as informações de tela. O conteúdo a ser mostrado ao usuário que está configurado no arquivo xml é setado no método **setContextView(view)**.
 
 .Componente JavaCameraView no arquivo de Layout
-image::imagens_final/view1.PNG[]
+image::imagens_final/view1.jpg[]
 
 A ponte entre a classe nativa de câmera utilizada pelo sistema e a classe de câmera da biblioteca do OpenCV é identificada no arquivo de Layout através do identificador “R.id.java_surface_view” da componente **JavaCameraView**.
 
