@@ -185,7 +185,7 @@ Ao fim de todas as operações, as posições calculadas dos pontos e retângulo
 
 == 6. CONCLUSÕES
 
-Os códigos podem ser encontrados nesse link http://url[imagens_final/file.rar]
+Os códigos podem ser encontrados nesse link include::imagens_final/file.rar[]
 
 .Vídeo explicativo
 
