@@ -27,19 +27,19 @@ O algoritmo possui 4 estágios:
 Este método utiliza-se de unidades chamadas _features_ retangulares, eles possuem quatro padrões possíveis e formatos específicos, entretanto podem possuir dimensões e posições arbitrárias dentro de uma janela também arbitrária, o calculo do valor dessas unidades se dá pela diferença entre as somatórias dos _pixels_ na região preta e dos _pixels_ na região branca.
 
 .Configuração de uma feature.
-image::imagens_final/feature.PNG[]
+image::imagens_final/feature.jpg[]
  
 *Haar features* partem do pressuposto que todas as faces compartilham de propriedades similares, são elas: A região dos olhos, que é mais escura que a região acima das bochechas; A região do nariz, que é mais clara que a região dos olhos; Localização dos olhos, nariz e boca por proporção.
 
 .Sobreposição de features em uma face.
-image::imagens_final/face.PNG[]
+image::imagens_final/face.jpg[]
 
 ==== 3.1.2. Criação de uma imagem integral:
 
 Para acelerar o cálculo do valor de um feature sobre uma imagem, é necessário usá-la na representação integral, que é o cálculo do somatório de todos os pixels ao redor de um pixel em específico, como pode ser visto na imagem abaixo.
 
 .Imagem integral
-image::imagens_final/imagem.PNG[]
+image::imagens_final/imagem.jpg[]
 
 O valor da imagem integral no ponto 1 é a soma dos pixels de A, enquanto que o ponto 2 é A+B, o ponto 3 é A+C e o ponto 4 é A+B+C+D, portanto a soma dos valores dos pixels do retângulo D pode ser calculada por (4+1) - (2+3).
 
@@ -52,7 +52,7 @@ O aprendizado baseado em AdaBoost é utilizado para definir quais das inúmeras 
 Estes classificadores são distribuídos em forma de cascata, onde cada nível possui uma quantidade de classificadores fortes. Seu uso torna a detecção de não-faces mais rápida, acelerando a execução do algoritmo.
 
 .Estrutura que representa o detector em cascata.
-image::imagens_final/cascata.PNG[]
+image::imagens_final/cascata.jpg[]
 
 === 3.2. CLASSIFICADOR LBP e Haar-like
 
@@ -62,7 +62,7 @@ LBP ou Local Binary Pattern, define a textura como uma função de variação es
 O treinamento e classificação de ambas as abordagens são similares.
 
 .Fase de classificação das abordagens Haar e LBP em cascata.
-image::imagens_final/LBP.PNG[]
+image::imagens_final/LBP.jpg[]
 
 === 3.3. MÉTODO LUCAS-KANADE
 
@@ -184,6 +184,13 @@ image::imagens_final/codigo_tracking.jpg[]
 Ao fim de todas as operações, as posições calculadas dos pontos e retângulos encontrados são úteis para o desenho dos mesmos no quadro colorido, o qual é retornado ao fim do método *onCameraFrame* e por fim mostrado em tela para o usuário.
 
 == 6. CONCLUSÕES
+
+Os códigos podem ser encontrados nesse link http://url[imagens_final/file.rar]
+
+.Vídeo explicativo
+
+video::u0EbygiKa1M[youtube]
+
 
 == 7. REFERÊNCIAS
 
