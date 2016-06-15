@@ -2176,14 +2176,20 @@ O algoritmo possui uma característica importante, ele apenas distingue as faces
 <div class="paragraph">
 <p>Este método utiliza-se de unidades chamadas <em>features</em> retangulares, eles possuem quatro padrões possíveis e formatos específicos, entretanto podem possuir dimensões e posições arbitrárias dentro de uma janela também arbitrária, o calculo do valor dessas unidades se dá pela diferença entre as somatórias dos <em>pixels</em> na região preta e dos <em>pixels</em> na região branca.</p>
 </div>
-<div class="paragraph">
-<p>(INSERIR IMAGEM)</p>
+<div class="imageblock">
+<div class="content">
+<img src="imagens_final/feature.PNG" alt="feature.PNG">
+</div>
+<div class="title">Figure 1. Configuração de uma feature.</div>
 </div>
 <div class="paragraph">
 <p><strong>Haar features</strong> partem do pressuposto que todas as faces compartilham de propriedades similares, são elas: A região dos olhos, que é mais escura que a região acima das bochechas; A região do nariz, que é mais clara que a região dos olhos; Localização dos olhos, nariz e boca por proporção.</p>
 </div>
-<div class="paragraph">
-<p>(INSERIR IMAGEM)</p>
+<div class="imageblock">
+<div class="content">
+<img src="imagens_final/face.PNG" alt="face.PNG">
+</div>
+<div class="title">Figure 2. Sobreposição de features em uma face.</div>
 </div>
 </div>
 <div class="sect3">
@@ -2191,8 +2197,11 @@ O algoritmo possui uma característica importante, ele apenas distingue as faces
 <div class="paragraph">
 <p>Para acelerar o cálculo do valor de um feature sobre uma imagem, é necessário usá-la na representação integral, que é o cálculo do somatório de todos os pixels ao redor de um pixel em específico, como pode ser visto na imagem abaixo.</p>
 </div>
-<div class="paragraph">
-<p>(INSERIR IMAGEM)</p>
+<div class="imageblock">
+<div class="content">
+<img src="imagens_final/imagem.PNG" alt="imagem.PNG">
+</div>
+<div class="title">Figure 3. Imagem integral</div>
 </div>
 <div class="paragraph">
 <p>O valor da imagem integral no ponto 1 é a soma dos pixels de A, enquanto que o ponto 2 é A+B, o ponto 3 é A+C e o ponto 4 é A+B+C+D, portanto a soma dos valores dos pixels do retângulo D pode ser calculada por (4+1) - (2+3).</p>
@@ -2209,8 +2218,11 @@ O algoritmo possui uma característica importante, ele apenas distingue as faces
 <div class="paragraph">
 <p>Estes classificadores são distribuídos em forma de cascata, onde cada nível possui uma quantidade de classificadores fortes. Seu uso torna a detecção de não-faces mais rápida, acelerando a execução do algoritmo.</p>
 </div>
-<div class="paragraph">
-<p>(INSERIR IMAGEM)</p>
+<div class="imageblock">
+<div class="content">
+<img src="imagens_final/cascata.PNG" alt="cascata.PNG">
+</div>
+<div class="title">Figure 4. Estrutura que representa o detector em cascata.</div>
 </div>
 </div>
 </div>
@@ -2222,8 +2234,11 @@ Feições Haar-like, como visto no tópico anterior, são filtros em que se deve
 LBP ou Local Binary Pattern, define a textura como uma função de variação espacial na intensidade dos pixels de uma imagem, a idéia desse operador é que feições comuns podem ser representadas através de um valor de uma determinada escala númerica, portanto com um conjunto de valores extraídos é possível fazer o reconhecimento de um determinado objeto em uma imagem.
 O treinamento e classificação de ambas as abordagens são similares.</p>
 </div>
-<div class="paragraph">
-<p>(INSERIR IMAGEM)</p>
+<div class="imageblock">
+<div class="content">
+<img src="imagens_final/LBP.PNG" alt="LBP.PNG">
+</div>
+<div class="title">Figure 5. Fase de classificação das abordagens Haar e LBP em cascata.</div>
 </div>
 </div>
 <div class="sect2">
@@ -2266,6 +2281,12 @@ Ele avalia a movimentação de pontos em uma pequena janela ao redor do ponto de
 </li>
 </ul>
 </div>
+<div class="imageblock">
+<div class="content">
+<img src="imagens_final/img1.jpg" alt="img1.jpg">
+</div>
+<div class="title">Figure 6. 1- Arquivo manifest; 2 - arquivo java; 3 - arquivos de layout.</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -2280,14 +2301,20 @@ Ele avalia a movimentação de pontos em uma pequena janela ao redor do ponto de
 <p>O componente utilizado no experimento foi do tipo Activity. Basicamente em toda atividade há interação com o usuário, portanto torna-se mandatório a configuração de dados e tela a serem exibidos, dessa forma alguns métodos extremamente funcionais às atividades foram sobrepostos. São eles: <strong>onDestroy()</strong>, <strong>onCreate(Bundle)</strong>, <strong>onPause()</strong>, <strong>onResume()</strong>.
 No método <strong>onCreate(Bundle)</strong> toda a atividade será inicializada e configurada, junto com as informações de tela. O conteúdo a ser mostrado ao usuário que está configurado no arquivo xml é setado no método <strong>setContextView(view)</strong>.</p>
 </div>
-<div class="paragraph">
-<p>(INSERIR IMAGEM)</p>
+<div class="imageblock">
+<div class="content">
+<img src="imagens_final/view1.PNG" alt="view1.PNG">
+</div>
+<div class="title">Figure 7. Componente JavaCameraView no arquivo de Layout</div>
 </div>
 <div class="paragraph">
 <p>A ponte entre a classe nativa de câmera utilizada pelo sistema e a classe de câmera da biblioteca do OpenCV é identificada no arquivo de Layout através do identificador “R.id.java_surface_view” da componente <strong>JavaCameraView</strong>.</p>
 </div>
-<div class="paragraph">
-<p>(INSERIR IMAGEM)</p>
+<div class="imageblock">
+<div class="content">
+<img src="imagens_final/oncreate.jpg" alt="oncreate.jpg">
+</div>
+<div class="title">Figure 8. Trechos destacados apresentam respectivamente a função onde o Layout é setado e JavaCameraView sendo alocado em variável.</div>
 </div>
 <div class="paragraph">
 <p>Os métodos <strong>onPause()</strong>, <strong>onResume()</strong> e <strong>onDestroy()</strong> funcionam respectivamente para pausar a aplicação quando o usuário o deixa em segundo plano, retornar a atividade que estava em segundo plano e destruir a atividade, terminando completamente a execução do aplicativo.</p>
@@ -2299,8 +2326,11 @@ No método <strong>onCreate(Bundle)</strong> toda a atividade será inicializada
 <p>Com o propósito de manipular os frames da filmagem antes deles serem mostrados ao usuário fez-se necessário que a classe principal implementasse a interface <strong>CvCameraViewListener2</strong>, que se comunica com o <strong>JavaCameraView</strong> e possibilita a obtenção dos quadros RGBA(quadros coloridos em canais vermelho, verde, azul e transparência, cuja variável é <strong>mRgba</strong>) obtidos e também a versão em escala de cinza(variável <strong>mGray</strong>) dos mesmos.
 Essa interface oferece três métodos <strong>onCameraViewStarted(int, int)</strong>, <strong>onCameraViewStopped() </strong>e <strong>onCameraFrame(CvCameraViewFrame)</strong>. No primeiro método são passados por parâmetro os tamanhos de quadro para que as matrizes e variáveis possam ser inicializadas. Isso acontece quando o preview da câmera é iniciado.</p>
 </div>
-<div class="paragraph">
-<p>(INSERIR IMAGEM)</p>
+<div class="imageblock">
+<div class="content">
+<img src="imagens_final/oncameraviewstarted.jpg" alt="oncameraviewstarted.jpg">
+</div>
+<div class="title">Figure 9. Imagem do código do método onCameraView e suas dependencias.</div>
 </div>
 <div class="paragraph">
 <p>O segundo método libera as matrizes dos quadros e é chamada quando o preview não se faz mais necessário.
@@ -2318,8 +2348,11 @@ O terceiro método é onde as ações do aplicativo ocorrem. Tal função passa 
 <p>Antes de comentar sobre o código do método <strong>onCameraFrame</strong> é necessário relatar sobre a inicialização da classe abstrata <strong>BaseLoaderCallback</strong>, necessária por prover suporte entre o do gerenciador OpenCV(baixado no Google Play) e o as funções do aplicativo, basicamente essa classe declara um método de retorno para certificar que as bibliotecas do OpenCV estão disponíveis.
 Na função <strong>void onManagerConnected(final int)</strong> caso o status seja de sucesso os classificadores Haar e LBP são inicializados(classificadores oferecidos pelo próprio OpenCV), caso haja algum erro de comunicação é emitido mensagem de falha. A imagem abaixo mostra apenas a inicialização do classificador de face(optou-se por classificador do tipo LBP para encontrar as faces por ser mais rápidos apesar de possuir um a taxa de erros um pouco maior), mas em sequência há a inicialização de classificadores de olhos, nariz e boca(esses classificadores são do tipo Haar).</p>
 </div>
-<div class="paragraph">
-<p>(INSERIR IMAGEM)</p>
+<div class="imageblock">
+<div class="content">
+<img src="imagens_final/imag_classificador.jpg" alt="imag classificador.jpg">
+</div>
+<div class="title">Figure 10. Trecho do código onde os classificadores são inicializados e a esquerda mostra a pasta onde o arquivo se localiza.</div>
 </div>
 <div class="paragraph">
 <p>Voltando ao início do método <strong>onCameraFrame</strong> é possível constatar que as variáveis de quadro colorido e em escala de cinza recebem informações dos frames capturados da variável <strong>inputFrame</strong>. A variável condicionante para detectar faces ou executar o fluxo óptico é <strong>achouFace</strong>. Caso tal variável seja falsa a detecção é iniciada no método void <strong>detectMultiScale(Mat, MatOfRect, double, int, int, Size, Size)</strong> pertencente aos classificadores.</p>
@@ -2372,15 +2405,21 @@ Os pontos que compõem os retângulos de faces encontradas são armazenadas na f
 </li>
 </ul>
 </div>
-<div class="paragraph">
-<p>(INSERIR IMAGEM)</p>
+<div class="imageblock">
+<div class="content">
+<img src="imagens_final/rosto.jpg" alt="rosto.jpg">
+</div>
+<div class="title">Figure 11. Trechos de interesse para a procura de elementos. 1- Área de interesse dos olhos; 2- Área de interesse do nariz; 3 - Área de interesse da boca.</div>
 </div>
 <div class="paragraph">
 <p>Após a obtenção dos retângulos de interesse os elementos faciais são encontrados em uma função criada funcional aos 3 elementos chamada <strong>void achaObjetosPorClassificador(Mat, Rect, CascadeClassifier, ArrayList&lt;Point&gt;, int, int, int)</strong>, cujos parâmetros são: a matriz de referência(quadro em escala de cinza), o retângulo de interesse, o classificador a ser utilizado, a lista de pontos a serem armazenados dos retângulos achados, o código informando o que será buscado(nariz, olho, etc), e as configurações de tamanho mínimo em X e Y da imagem. No método há uma contagem para que sejam computados apenas 2 olhos e uma boca e nariz para cada face. Os pontos armazenados são os pontos centrais dos retângulos dos elementos de face, que coincidem com a pupila dos olhos, a ponta do nariz e o centro da boca.
 Esse processo de “aprendizagem” se repete por 7 frames afim de que todos os elementos sejam encontrados. A partir do sétimo frame a variável <strong>achouFace</strong> passa a ter valor <strong>true</strong> e a parte do código executada passa a ser o de rastreamento. É possível verificar o trecho do código comentado nessa sessão abaixo.</p>
 </div>
-<div class="paragraph">
-<p>(INSERIR IMAGEM)</p>
+<div class="imageblock">
+<div class="content">
+<img src="imagens_final/codigo_detectMulti.jpg" alt="codigo detectMulti.jpg">
+</div>
+<div class="title">Figure 12. 1 - Detecção de face; 2 - Adição dos pontos dos elementos do retângulo encontrado; 3 - Funções para encontrar nariz, olhos e boca.</div>
 </div>
 </div>
 </div>
@@ -2421,8 +2460,11 @@ O algoritmo construído mostra pontos verdes, que correspondem ao feature atual,
 Ao fim do ciclo, os pontos são checados afim de verificar se o objeto rastreado saiu do frame, em caso positivo as variáveis que decidem a detecção de face são inicializadas com valores que permite novas buscas por rostos.
 Na imagem abaixo pode-se observar trecho do código detalhado.</p>
 </div>
-<div class="paragraph">
-<p>(INSERIR IMAGEM)</p>
+<div class="imageblock">
+<div class="content">
+<img src="imagens_final/codigo_tracking.jpg" alt="codigo tracking.jpg">
+</div>
+<div class="title">Figure 13. Imagem do trecho de código do rastreamento. 1- Método de rastreio, retorna features nas novas posições; 2 - Desenho dos pontos e linhas das features no quadro colorido; 3 - Salvando o quadro atual para serve de quadro anterior na próxima iteração.</div>
 </div>
 <div class="paragraph">
 <p>Ao fim de todas as operações, as posições calculadas dos pontos e retângulos encontrados são úteis para o desenho dos mesmos no quadro colorido, o qual é retornado ao fim do método <strong>onCameraFrame</strong> e por fim mostrado em tela para o usuário.</p>
@@ -2478,7 +2520,7 @@ SANTOS, Túlio L. Detecção de faces através do algoritmo de Viola-Jones. COPP
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-06-15 17:34:44 HPBA
+Last updated 2016-06-15 18:02:14 HPBA
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">
