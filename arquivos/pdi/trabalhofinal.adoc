@@ -26,17 +26,20 @@ O algoritmo possui 4 estágios:
 
 Este método utiliza-se de unidades chamadas _features_ retangulares, eles possuem quatro padrões possíveis e formatos específicos, entretanto podem possuir dimensões e posições arbitrárias dentro de uma janela também arbitrária, o calculo do valor dessas unidades se dá pela diferença entre as somatórias dos _pixels_ na região preta e dos _pixels_ na região branca.
 
-(INSERIR IMAGEM)
+.Configuração de uma feature.
+image::imagens_final/feature.PNG[]
  
 *Haar features* partem do pressuposto que todas as faces compartilham de propriedades similares, são elas: A região dos olhos, que é mais escura que a região acima das bochechas; A região do nariz, que é mais clara que a região dos olhos; Localização dos olhos, nariz e boca por proporção.
 
-(INSERIR IMAGEM)
+.Sobreposição de features em uma face.
+image::imagens_final/face.PNG[]
 
 ==== 3.1.2. Criação de uma imagem integral:
 
 Para acelerar o cálculo do valor de um feature sobre uma imagem, é necessário usá-la na representação integral, que é o cálculo do somatório de todos os pixels ao redor de um pixel em específico, como pode ser visto na imagem abaixo.
 
-(INSERIR IMAGEM)
+.Imagem integral
+image::imagens_final/imagem.PNG[]
 
 O valor da imagem integral no ponto 1 é a soma dos pixels de A, enquanto que o ponto 2 é A+B, o ponto 3 é A+C e o ponto 4 é A+B+C+D, portanto a soma dos valores dos pixels do retângulo D pode ser calculada por (4+1) - (2+3).
 
@@ -48,7 +51,8 @@ O aprendizado baseado em AdaBoost é utilizado para definir quais das inúmeras 
 
 Estes classificadores são distribuídos em forma de cascata, onde cada nível possui uma quantidade de classificadores fortes. Seu uso torna a detecção de não-faces mais rápida, acelerando a execução do algoritmo.
 
-(INSERIR IMAGEM)
+.Estrutura que representa o detector em cascata.
+image::imagens_final/cascata.PNG[]
 
 === 3.2. CLASSIFICADOR LBP e Haar-like
 
@@ -57,7 +61,8 @@ Feições Haar-like, como visto no tópico anterior, são filtros em que se deve
 LBP ou Local Binary Pattern, define a textura como uma função de variação espacial na intensidade dos pixels de uma imagem, a idéia desse operador é que feições comuns podem ser representadas através de um valor de uma determinada escala númerica, portanto com um conjunto de valores extraídos é possível fazer o reconhecimento de um determinado objeto em uma imagem.
 O treinamento e classificação de ambas as abordagens são similares.
 
-(INSERIR IMAGEM)
+.Fase de classificação das abordagens Haar e LBP em cascata.
+image::imagens_final/LBP.PNG[]
 
 === 3.3. MÉTODO LUCAS-KANADE
 
@@ -79,6 +84,9 @@ As componentes são:
 * Um provedor de conteúdo é implementado como uma subclasse de *ContentProvider* e precisa implementar um conjunto padrão de APIs que permitem a outros aplicativos realizar transações.
 * Os receptores de transmissão são implementados como subclasses de *BroadcastReceiver*.
 
+.1- Arquivo manifest; 2 - arquivo java; 3 - arquivos de layout.
+image::imagens_final/img1.jpg[]
+
 == 5. ESTRUTURA DO PROJETO
 
 Basicamente a estrutura do aplicativo se dá em métodos essenciais já existentes das classes utilizadas que foram sobrepostos para fim específico da aplicação e métodos secundários auxiliares.
@@ -88,11 +96,13 @@ Basicamente a estrutura do aplicativo se dá em métodos essenciais já existent
 O componente utilizado no experimento foi do tipo Activity. Basicamente em toda atividade há interação com o usuário, portanto torna-se mandatório a configuração de dados e tela a serem exibidos, dessa forma alguns métodos extremamente funcionais às atividades foram sobrepostos. São eles: **onDestroy()**, **onCreate(Bundle)**, **onPause()**, **onResume()**.
 No método *onCreate(Bundle)* toda a atividade será inicializada e configurada, junto com as informações de tela. O conteúdo a ser mostrado ao usuário que está configurado no arquivo xml é setado no método **setContextView(view)**.
 
-(INSERIR IMAGEM)
+.Componente JavaCameraView no arquivo de Layout
+image::imagens_final/view1.PNG[]
 
 A ponte entre a classe nativa de câmera utilizada pelo sistema e a classe de câmera da biblioteca do OpenCV é identificada no arquivo de Layout através do identificador “R.id.java_surface_view” da componente **JavaCameraView**.
 
-(INSERIR IMAGEM)
+.Trechos destacados apresentam respectivamente a função onde o Layout é setado e JavaCameraView sendo alocado em variável.
+image::imagens_final/oncreate.jpg[]
 
 Os métodos **onPause()**, *onResume()* e *onDestroy()* funcionam respectivamente para pausar a aplicação quando o usuário o deixa em segundo plano, retornar a atividade que estava em segundo plano e destruir a atividade, terminando completamente a execução do aplicativo.
 
@@ -101,7 +111,8 @@ Os métodos **onPause()**, *onResume()* e *onDestroy()* funcionam respectivament
 Com o propósito de manipular os frames da filmagem antes deles serem mostrados ao usuário fez-se necessário que a classe principal implementasse a interface **CvCameraViewListener2**, que se comunica com o *JavaCameraView* e possibilita a obtenção dos quadros RGBA(quadros coloridos em canais vermelho, verde, azul e transparência, cuja variável é **mRgba**) obtidos e também a versão em escala de cinza(variável **mGray**) dos mesmos.
 Essa interface oferece três métodos **onCameraViewStarted(int, int)**, **onCameraViewStopped() **e **onCameraFrame(CvCameraViewFrame)**. No primeiro método são passados por parâmetro os tamanhos de quadro para que as matrizes e variáveis possam ser inicializadas. Isso acontece quando o preview da câmera é iniciado.
 
-(INSERIR IMAGEM)
+.Imagem do código do método onCameraView e suas dependencias.
+image::imagens_final/oncameraviewstarted.jpg[]
 
 O segundo método libera as matrizes dos quadros e é chamada quando o preview não se faz mais necessário.
 O terceiro método é onde as ações do aplicativo ocorrem. Tal função passa por parâmetro o **inputFrame**, que é o frame capturado via câmera do dispositivo e após manipulação retorna o frame para ser visualizado no preview pelo usuário na componente *JavaCameraView* localizado no Layout. Basicamente 90% do comportamento e ações do aplicativo advém da codificação inserida nesse método, que será discutida nas sessões seguintes.
@@ -115,7 +126,8 @@ Nessa sessão será discutido a detecção e rastreio de faces dos quadros captu
 Antes de comentar sobre o código do método *onCameraFrame* é necessário relatar sobre a inicialização da classe abstrata **BaseLoaderCallback**, necessária por prover suporte entre o do gerenciador OpenCV(baixado no Google Play) e o as funções do aplicativo, basicamente essa classe declara um método de retorno para certificar que as bibliotecas do OpenCV estão disponíveis.
 Na função *void onManagerConnected(final int)* caso o status seja de sucesso os classificadores Haar e LBP são inicializados(classificadores oferecidos pelo próprio OpenCV), caso haja algum erro de comunicação é emitido mensagem de falha. A imagem abaixo mostra apenas a inicialização do classificador de face(optou-se por classificador do tipo LBP para encontrar as faces por ser mais rápidos apesar de possuir um a taxa de erros um pouco maior), mas em sequência há a inicialização de classificadores de olhos, nariz e boca(esses classificadores são do tipo Haar).
 
-(INSERIR IMAGEM)
+.Trecho do código onde os classificadores são inicializados e a esquerda mostra a pasta onde o arquivo se localiza.
+image::imagens_final/imag_classificador.jpg[]
 
 Voltando ao início do método *onCameraFrame* é possível constatar que as variáveis de quadro colorido e em escala de cinza recebem informações dos frames capturados da variável **inputFrame**. A variável condicionante para detectar faces ou executar o fluxo óptico é **achouFace**. Caso tal variável seja falsa a detecção é iniciada no método void *detectMultiScale(Mat, MatOfRect, double, int, int, Size, Size)* pertencente aos classificadores.
 
@@ -138,12 +150,14 @@ As reduções do retângulo feitas pelo método para cada código são:
 * **NARIZ**: Para X do P1 mantem o valor do X inicial mais vinte por cento da largura do retângulo vermelho, para o Y usa-se o Y inicial do retângulo vermelho mais vinte e cinco por cento da altura. Para o X do P2 usa-se o X inicial mais oitenta por cento da largura do retângulo vermelho, para o Y do P2 usa-se o Y inicial do retângulo vermelho mais oitenta por cento da altura.
 * **OLHOS**: Para X do P1 mantem o valor do X inicial do retângulo vermelho, para o Y usa-se o Y inicial do retângulo vermelho mais vinte por cento da altura. Para o X do P2 usa-se o X final do retângulo vermelho, para o Y do P2 usa-se o Y inicial do retângulo vermelho mais sessenta por cento da altura.
 
-(INSERIR IMAGEM)
+.Trechos de interesse para a procura de elementos. 1- Área de interesse dos olhos; 2- Área de interesse do nariz; 3 - Área de interesse da boca.
+image::imagens_final/rosto.jpg[]
 
 Após a obtenção dos retângulos de interesse os elementos faciais são encontrados em uma função criada funcional aos 3 elementos chamada **void achaObjetosPorClassificador(Mat, Rect, CascadeClassifier, ArrayList<Point>, int, int, int)**, cujos parâmetros são: a matriz de referência(quadro em escala de cinza), o retângulo de interesse, o classificador a ser utilizado, a lista de pontos a serem armazenados dos retângulos achados, o código informando o que será buscado(nariz, olho, etc), e as configurações de tamanho mínimo em X e Y da imagem. No método há uma contagem para que sejam computados apenas 2 olhos e uma boca e nariz para cada face. Os pontos armazenados são os pontos centrais dos retângulos dos elementos de face, que coincidem com a pupila dos olhos, a ponta do nariz e o centro da boca.
 Esse processo de “aprendizagem” se repete por 7 frames afim de que todos os elementos sejam encontrados. A partir do sétimo frame a variável *achouFace* passa a ter valor *true* e a parte do código executada passa a ser o de rastreamento. É possível verificar o trecho do código comentado nessa sessão abaixo.
 
-(INSERIR IMAGEM)
+.1 - Detecção de face; 2 - Adição dos pontos dos elementos do retângulo encontrado; 3 - Funções para encontrar nariz, olhos e boca.
+image::imagens_final/codigo_detectMulti.jpg[]
 
 === 5.3.2. RASTREAMENTO DE FACES
 
@@ -164,7 +178,8 @@ O algoritmo construído mostra pontos verdes, que correspondem ao feature atual,
 Ao fim do ciclo, os pontos são checados afim de verificar se o objeto rastreado saiu do frame, em caso positivo as variáveis que decidem a detecção de face são inicializadas com valores que permite novas buscas por rostos.
 Na imagem abaixo pode-se observar trecho do código detalhado.
 
-(INSERIR IMAGEM)
+.Imagem do trecho de código do rastreamento. 1- Método de rastreio, retorna features nas novas posições; 2 - Desenho dos pontos e linhas das features no quadro colorido; 3 - Salvando o quadro atual para serve de quadro anterior na próxima iteração.
+image::imagens_final/codigo_tracking.jpg[]
 
 Ao fim de todas as operações, as posições calculadas dos pontos e retângulos encontrados são úteis para o desenho dos mesmos no quadro colorido, o qual é retornado ao fim do método *onCameraFrame* e por fim mostrado em tela para o usuário.
 
