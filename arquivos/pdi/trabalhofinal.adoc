@@ -1,7 +1,7 @@
 = APLICATIVO ANDROID DE DETECÇÃO E RASTREAMENTO DE FACE HUMANA EM TEMPO REAL UTILIZANDO OPENCV
 :Author:    Victor Mafra e Angele Louise
 :Email:     <angelealst@hotmail.com e vick.vems@gmail.com>
-:toc: right
+:toc: left
 
 == 1. INTRODUÇÃO
 O seguinte trabalho trata sobre experiência realizada em plataforma Android com finalidade de desenvolver um aplicativo para detecção e rastreamento de faces em tempo real utilizando OpenCV(biblioteca multiplataforma de computação visual) para o processamento de vídeo. Para detectar faces foi feito uso de classificadores do tipo LBP e Haar e para o rastreamento o método de Lucas-Kanade, que são recursos oferecidos pela biblioteca supracitada. 
@@ -160,7 +160,7 @@ Esse processo de “aprendizagem” se repete por 7 frames afim de que todos os 
 .1 - Detecção de face; 2 - Adição dos pontos dos elementos do retângulo encontrado; 3 - Funções para encontrar nariz, olhos e boca.
 image::imagens_final/codigo_detectMulti.jpg[]
 
-=== 5.3.2. RASTREAMENTO DE FACES
+==== 5.3.2. RASTREAMENTO DE FACES
 
 O rastreio é feito quando alguma face é encontrada. Primeiramente há o teste para verificar se todos os elementos das faces foram encontrados(a quantidade de pontos considerada é de 8 pontos para cada face, 4 do bounding box do rosto e 4 dos elementos sociais), caso o resultado do teste seja falso as variáveis *achouFace* e *countFrames* são inicializadas e há uma nova procura por rostos. Caso o resultado seja verdadeiro há o prosseguimento do código com a inicialização da variável **features**, que armazena os pontos encontrados na detecção anterior para serem rastreados. O método que realiza o rastreamento é
 **void calcOpticalFlowPyrLK(Mat, Mat, MatOfPoint2f, MatOfPoint2f, MatOfByte, MatOfFloat)**, que o faz usando o algoritmo de Lucas-Kanade através do cálculo do fluxo óptico para um conjunto de pontos esparsos usando o método das pirâmides.
