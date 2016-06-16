@@ -1,6 +1,7 @@
 = APLICATIVO ANDROID DE DETECÇÃO E RASTREAMENTO DE FACE HUMANA EM TEMPO REAL UTILIZANDO OPENCV
 :Author:    Victor Mafra e Angele Louise
 :Email:     <angelealst@hotmail.com e vick.vems@gmail.com>
+:toc: right
 
 == 1. INTRODUÇÃO
 O seguinte trabalho trata sobre experiência realizada em plataforma Android com finalidade de desenvolver um aplicativo para detecção e rastreamento de faces em tempo real utilizando OpenCV(biblioteca multiplataforma de computação visual) para o processamento de vídeo. Para detectar faces foi feito uso de classificadores do tipo LBP e Haar e para o rastreamento o método de Lucas-Kanade, que são recursos oferecidos pela biblioteca supracitada. 
@@ -183,23 +184,14 @@ image::imagens_final/codigo_tracking.jpg[]
 
 Ao fim de todas as operações, as posições calculadas dos pontos e retângulos encontrados são úteis para o desenho dos mesmos no quadro colorido, o qual é retornado ao fim do método *onCameraFrame* e por fim mostrado em tela para o usuário.
 
-== 6. CONCLUSÕES
-
-A detecção de faces ocorreu de forma satisfatória e com poucos erros, porém é uma operação com elevado custo computacional, principalmente quando haviam muitos rostos em cena, de tal forma que não serve como fonte rastreadora ainda mais se levado em conta algoritmos que rodam em tempo real. A partir desse pensamento foi de vital importância a inclusão de outro algoritmo para o rastreamento após a detecção dos pontos de face. O algoritmo escolhido foi o de Lucas-Kanade que apesar de eficiente gera erros quando os pixels(features) rastreados se deslocam demasiadamente no espaço entre um quadro e outro. Apesar desses fatores e levando em conta a magnitude do projeto e o tempo necessário para a execução, os resultados foram proveitosos, pois na maioria das situações bem-sucedidas é notória a forma como os algoritmos trabalham juntos para achar e rastrear os rostos. Os erros encontrados, por sua vez, se transformam em cenários de base para possíveis estudos e desenvolvimento na criação de classificadores próprios, que garantem uma quantidade maior de quadros por segundo, ou uma melhor interação entre a câmera nativa e a câmera da biblioteca, assim como tratamento de erros para rastreamento indevido.
-
-O arquivo java pode ser encontrados nesse link: https://github.com/angelelouise/angelelouise.github.io/blob/master/arquivos/pdi/imagens_final/Arquivos%20principais/Arquivo%20java/FAceDetection.java[Link 1]
-
-O arquivo manifest nesse link:
-https://github.com/angelelouise/angelelouise.github.io/blob/master/arquivos/pdi/imagens_final/Arquivos%20principais/Arquivo%20manifest/AndroidManifest.xml[Link 1]
-
-Os arquivos de Layout nos links:
-https://github.com/angelelouise/angelelouise.github.io/blob/master/arquivos/pdi/imagens_final/Arquivos%20principais/Arquivos%20layout/activity_face_detection.xml[Link 1]
-https://github.com/angelelouise/angelelouise.github.io/blob/master/arquivos/pdi/imagens_final/Arquivos%20principais/Arquivos%20layout/content_face_detection.xml[Link 2]
 
 .Vídeo explicativo
 
 video::u0EbygiKa1M[youtube]
 
+== 6. CONCLUSÕES
+
+A detecção de faces ocorreu de forma satisfatória e com poucos erros, porém é uma operação com elevado custo computacional, principalmente quando haviam muitos rostos em cena, de tal forma que não serve como fonte rastreadora ainda mais se levado em conta algoritmos que rodam em tempo real. A partir desse pensamento foi de vital importância a inclusão de outro algoritmo para o rastreamento após a detecção dos pontos de face. O algoritmo escolhido foi o de Lucas-Kanade que apesar de eficiente gera erros quando os pixels(features) rastreados se deslocam demasiadamente no espaço entre um quadro e outro. Apesar desses fatores e levando em conta a magnitude do projeto e o tempo necessário para a execução, os resultados foram proveitosos, pois na maioria das situações bem-sucedidas é notória a forma como os algoritmos trabalham juntos para achar e rastrear os rostos. Os erros encontrados, por sua vez, se transformam em cenários de base para possíveis estudos e desenvolvimento na criação de classificadores próprios, que garantem uma quantidade maior de quadros por segundo, ou uma melhor interação entre a câmera nativa e a câmera da biblioteca, assim como tratamento de erros para rastreamento indevido.
 
 == 7. REFERÊNCIAS
 
@@ -225,3 +217,16 @@ PUPIL LABS. Pupil - eye tracking platform. Github, 2016. Disponível em:<http://
 HOSEK, Roman. Android eye detection and tracking with OpenCV. Disponível em:<http://http://romanhosek.cz/android-eye-detection-and-tracking-with-opencv/>. Acesso em 15 de Junho de 2016.
 
 ANDROID DEVELOPERS. Api-Guides: App Components. Andorid. Disponível em:<http://https://developer.android.com/guide/components/index.html
+
+== 8. ANEXOS
+
+
+O arquivo JAVA pode ser encontrados nesse link: https://github.com/angelelouise/angelelouise.github.io/blob/master/arquivos/pdi/imagens_final/Arquivos%20principais/Arquivo%20java/FAceDetection.java[Link 1]
+
+O arquivo Manifest nesse link:
+https://github.com/angelelouise/angelelouise.github.io/blob/master/arquivos/pdi/imagens_final/Arquivos%20principais/Arquivo%20manifest/AndroidManifest.xml[Link 1]
+
+Os arquivos de Layout nos links:
+https://github.com/angelelouise/angelelouise.github.io/blob/master/arquivos/pdi/imagens_final/Arquivos%20principais/Arquivos%20layout/activity_face_detection.xml[Link 1]
+https://github.com/angelelouise/angelelouise.github.io/blob/master/arquivos/pdi/imagens_final/Arquivos%20principais/Arquivos%20layout/content_face_detection.xml[Link 2]
+

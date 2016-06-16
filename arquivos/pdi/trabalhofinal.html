@@ -2130,12 +2130,38 @@ p {
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css">
 </head>
-<body class="article">
+<body class="article toc2 toc-right">
 <div id="header">
 <h1>APLICATIVO ANDROID DE DETECÇÃO E RASTREAMENTO DE FACE HUMANA EM TEMPO REAL UTILIZANDO OPENCV</h1>
 <div class="details">
 <span id="author" class="author">Victor Mafra e Angele Louise</span><br>
 <span id="email" class="email">&lt;<a href="mailto:angelealst@hotmail.com">angelealst@hotmail.com</a> e <a href="mailto:vick.vems@gmail.com">vick.vems@gmail.com</a>&gt;</span><br>
+</div>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#true1-introdu-o">1. INTRODUÇÃO</a></li>
+<li><a href="#true2-programas-e-ferramentas-utilizadas">2. PROGRAMAS E FERRAMENTAS UTILIZADAS</a></li>
+<li><a href="#true3-conte-do-te-rico">3. CONTEÚDO TEÓRICO</a>
+<ul class="sectlevel2">
+<li><a href="#true3-1-algoritmo-de-viola-jones">3.1. ALGORITMO DE VIOLA-JONES</a></li>
+<li><a href="#true3-2-classificador-lbp-e-haar-like">3.2. CLASSIFICADOR LBP e Haar-like</a></li>
+<li><a href="#true3-3-m-todo-lucas-kanade">3.3. MÉTODO LUCAS-KANADE</a></li>
+</ul>
+</li>
+<li><a href="#true4-estrutura-de-um-aplicativo-android">4. ESTRUTURA DE UM APLICATIVO ANDROID</a></li>
+<li><a href="#true5-estrutura-do-projeto">5. ESTRUTURA DO PROJETO</a>
+<ul class="sectlevel2">
+<li><a href="#true5-1-m-todos-essenciais-sobrepostos-da-activity">5.1. MÉTODOS ESSENCIAIS SOBREPOSTOS DA ACTIVITY</a></li>
+<li><a href="#true5-2-m-todos-sobrepostos-da-implementa-o-de-classe-opencv">5.2. MÉTODOS SOBREPOSTOS DA IMPLEMENTAÇÃO DE CLASSE OPENCV</a></li>
+<li><a href="#true5-3-an-lise-do-c-digo-de-detec-o-e-rastreio-de-faces">5.3. ANÁLISE DO CÓDIGO DE DETECÇÃO E RASTREIO DE FACES</a></li>
+<li><a href="#true5-3-2-rastreamento-de-faces">5.3.2. RASTREAMENTO DE FACES</a></li>
+</ul>
+</li>
+<li><a href="#true6-conclus-es">6. CONCLUSÕES</a></li>
+<li><a href="#true7-refer-ncias">7. REFERÊNCIAS</a></li>
+<li><a href="#true8-anexos">8. ANEXOS</a></li>
+</ul>
 </div>
 </div>
 <div id="content">
@@ -2469,6 +2495,12 @@ Na imagem abaixo pode-se observar trecho do código detalhado.</p>
 <div class="paragraph">
 <p>Ao fim de todas as operações, as posições calculadas dos pontos e retângulos encontrados são úteis para o desenho dos mesmos no quadro colorido, o qual é retornado ao fim do método <strong>onCameraFrame</strong> e por fim mostrado em tela para o usuário.</p>
 </div>
+<div class="videoblock">
+<div class="title">Vídeo explicativo</div>
+<div class="content">
+<iframe src="https://www.youtube.com/embed/u0EbygiKa1M?rel=0&amp;hl=en" frameborder="0" allowfullscreen></iframe>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -2477,24 +2509,6 @@ Na imagem abaixo pode-se observar trecho do código detalhado.</p>
 <div class="sectionbody">
 <div class="paragraph">
 <p>A detecção de faces ocorreu de forma satisfatória e com poucos erros, porém é uma operação com elevado custo computacional, principalmente quando haviam muitos rostos em cena, de tal forma que não serve como fonte rastreadora ainda mais se levado em conta algoritmos que rodam em tempo real. A partir desse pensamento foi de vital importância a inclusão de outro algoritmo para o rastreamento após a detecção dos pontos de face. O algoritmo escolhido foi o de Lucas-Kanade que apesar de eficiente gera erros quando os pixels(features) rastreados se deslocam demasiadamente no espaço entre um quadro e outro. Apesar desses fatores e levando em conta a magnitude do projeto e o tempo necessário para a execução, os resultados foram proveitosos, pois na maioria das situações bem-sucedidas é notória a forma como os algoritmos trabalham juntos para achar e rastrear os rostos. Os erros encontrados, por sua vez, se transformam em cenários de base para possíveis estudos e desenvolvimento na criação de classificadores próprios, que garantem uma quantidade maior de quadros por segundo, ou uma melhor interação entre a câmera nativa e a câmera da biblioteca, assim como tratamento de erros para rastreamento indevido.</p>
-</div>
-<div class="paragraph">
-<p>O arquivo java pode ser encontrados nesse link: <a href="https://github.com/angelelouise/angelelouise.github.io/blob/master/arquivos/pdi/imagens_final/Arquivos%20principais/Arquivo%20java/FAceDetection.java">Link 1</a></p>
-</div>
-<div class="paragraph">
-<p>O arquivo manifest nesse link:
-<a href="https://github.com/angelelouise/angelelouise.github.io/blob/master/arquivos/pdi/imagens_final/Arquivos%20principais/Arquivo%20manifest/AndroidManifest.xml">Link 1</a></p>
-</div>
-<div class="paragraph">
-<p>Os arquivos de Layout nos links:
-<a href="https://github.com/angelelouise/angelelouise.github.io/blob/master/arquivos/pdi/imagens_final/Arquivos%20principais/Arquivos%20layout/activity_face_detection.xml">Link 1</a>
-<a href="https://github.com/angelelouise/angelelouise.github.io/blob/master/arquivos/pdi/imagens_final/Arquivos%20principais/Arquivos%20layout/content_face_detection.xml">Link 2</a></p>
-</div>
-<div class="videoblock">
-<div class="title">Vídeo explicativo</div>
-<div class="content">
-<iframe src="https://www.youtube.com/embed/u0EbygiKa1M?rel=0&amp;hl=en" frameborder="0" allowfullscreen></iframe>
-</div>
 </div>
 </div>
 </div>
@@ -2537,10 +2551,27 @@ SANTOS, Túlio L. Detecção de faces através do algoritmo de Viola-Jones. COPP
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="true8-anexos"><a class="anchor" href="#true8-anexos"></a>8. ANEXOS</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>O arquivo JAVA pode ser encontrados nesse link: <a href="https://github.com/angelelouise/angelelouise.github.io/blob/master/arquivos/pdi/imagens_final/Arquivos%20principais/Arquivo%20java/FAceDetection.java">Link 1</a></p>
+</div>
+<div class="paragraph">
+<p>O arquivo Manifest nesse link:
+<a href="https://github.com/angelelouise/angelelouise.github.io/blob/master/arquivos/pdi/imagens_final/Arquivos%20principais/Arquivo%20manifest/AndroidManifest.xml">Link 1</a></p>
+</div>
+<div class="paragraph">
+<p>Os arquivos de Layout nos links:
+<a href="https://github.com/angelelouise/angelelouise.github.io/blob/master/arquivos/pdi/imagens_final/Arquivos%20principais/Arquivos%20layout/activity_face_detection.xml">Link 1</a>
+<a href="https://github.com/angelelouise/angelelouise.github.io/blob/master/arquivos/pdi/imagens_final/Arquivos%20principais/Arquivos%20layout/content_face_detection.xml">Link 2</a></p>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-06-15 18:35:58 HPBA
+Last updated 2016-06-15 21:10:21 ESAST
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">
