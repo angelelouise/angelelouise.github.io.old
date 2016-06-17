@@ -1,45 +1,52 @@
 = Filtragem no domínio da frequência
+:Author:    Victor Mafra e Angele Louise
+:Email:     <angelealst@hotmail.com e vick.vems@gmail.com>
+:toc: left
 
 == Q.1
+
 Utilizando o programa exemplos/dft.cpp como referência, implemente o filtro homomórfico para melhorar imagens com iluminação irregular. 
 Crie uma cena mal iluminada e ajuste os parâmetros do filtro homomórfico para corrigir a iluminação da melhor forma possível. Assuma que a imagem fornecida é 
 em tons de cinza.
 
-==============
-É um tipo de filtragem que se baseia nos componentes de iluminação e reflectância. É útil na melhora da aparência de imagens através de compressão de intervalo de brilho e realce de contraste simultâneos.
+    É um tipo de filtragem que se baseia nos componentes de iluminação e reflectância. É útil na melhora da aparência de imagens através de compressão de intervalo de brilho e realce de contraste simultâneos.
 
-A abordagem da filtragem homomórfica pode ser representada pelo seguinte fluxo grama.
-==============
+    A abordagem da filtragem homomórfica pode ser representada pelo seguinte fluxo grama.
+    
+
+
 image::dft.png[]
-==============
+
+
 	Para a construção o programa dft.cpp fornecido pelo professor foi usado como base.
 	O programa homomorphicFilter é composto por 3 funções além da principal. Sendo elas void deslocaDFT(Mat&), void homomorphicFilter() e void testArgs(char).
-As variáveis são todas globais, portanto podem ser acessadas por qualquer função sem que sejam passadas por parâmetro.
+    As variáveis são todas globais, portanto podem ser acessadas por qualquer função sem que sejam passadas por parâmetro.
 	Basicamente a função principal tem objetivo de obter parâmetros de quantidade de linhas e colunas para a utilização otimizada do método de transformada discreta de Fourrier(DFT). Para isso a imagem passada tem suas colunas e linhas verificadas através do método getOptimalDFTSize(int) cujo retorno se trata da melhor magnitude das componentes citadas. Uma nova matriz é criada com o tamanho da imagem original mais o padding(imagem completada com zeros para que suas dimensões sejam ótimas) que servirá para que os valores do filtro sejam alocados, já que o filtro deve possuir tamanho idêntico ao da imagem pós padding.
 	Na função homomorphicFilter() o código principal está contido em um laço, que tem sua quebra decidida pelo usuário (veja mais detalhes posteriormente). O primeira coisa a ser executada dentro da função é o cálculo do filtro homomórfico, cujos valores iniciais das variáveis gama high(gH), gama low(gL), Do e c são respectivamente  2.0, 0.5, 8, 1 (foram os valores adotados pelo professor, e também adotados nesse programa com finalidade de checar se o programa foi bem sucedido ao obter os mesmos resultados na mesma imagem e de criar limites superior e inferior para o valor das variáveis). 
-A fórmula adotada para o filtro homomórfico foi: 
-==============
+    A fórmula adotada para o filtro homomórfico foi: 
+
+
 image::form.png[]
-==============
+
+
+
 	Os próximos passos são caracterizados pela construção da parte real e imaginária da imagem original pós padding. É realizado o procedimento de transformada e em seguida seus quadrantes são trocados na função void deslocaDFT(Mat&). O filtro é aplicado a imagem seus quadrantes são novamente trocados, há a transformada inversa de Fourrier resultando em uma imagem com dois canais. O canal resultante com valores reais é normalizado e exibido na tela.
 	Essa ação se repete ao apertar qualquer tecla exceto 'esc'. Para as teclas 'h', 'H', 'l', 'L', 'c', 'C', 'd', 'D' existem ações avaliadas pela função void testArgs(char). Para os caracteres maiúsculos há acréscimo no valor da variável, para os minúsculos há decréscimo. Os valores de acréscimo e decréscimo são diferentes para as variáveis, sendo de 0.5 para Do('d' e 'D') e c('c' e 'C') e de 0.1 para   gama low('l' e 'L') e gama high('h' e 'H'). Os limites foram escolhidos arbitrariamente e são:
-Do: 0.5 ~ 20
-c: 1 ~ 10
-gH: gL+1 ~ 14
-gL: 0.1 ~ gH-1
+    Do: 0.5 ~ 20
+    c: 1 ~ 10
+    gH: gL+1 ~ 14
+    gL: 0.1 ~ gH-1
 	Foram realizados testes em duas imagens, uma mostra o interior de uma caverna com uma passarela iluminada mas com paredes escuras e a segunda se trata de um raio-x. Em ambas as imagens após os filtros mais detalhes puderam ser observados. Na caverna detalhes nas rochas das paredes laterais que eram mais escuras na imagem original se tornaram mais evidentes e no raio-x houve um aumento na nitidez e contraste, possibilitando a melhor visualização do que é osso e do que não é osso, as veias e artérias se tornaram mais evidentes também. 
-Abaixo segue o valor dos parâmetros usados (ao serem modificados pelo teclado são mostrados no console).
+    Abaixo segue o valor dos parâmetros usados (ao serem modificados pelo teclado são mostrados no console).
 
 	Para a foto da caverna o melhor ajuste foi:
-gH: 2.899999 <> gL: 0.500000 <> c: 10.500000 <> Do: 10.000000
+    gH: 2.899999 <> gL: 0.500000 <> c: 10.500000 <> Do: 10.000000
 
 	Para a foto do raio-x o melhor ajuste foi:
-gH: 14.000000 <> gL: 7.699995 <> c: 1.000000 <> Do: 3.000000
-=================
+    gH: 14.000000 <> gL: 7.699995 <> c: 1.000000 <> Do: 3.000000
 
-.Código
 
-:source-highlighter: coderay
+== Código
 
 [source,c]
 ----------------------------
