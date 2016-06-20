@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.4-dev">
-<meta name="author" content="Victor Mafra e Angele Louise">
+<meta name="author" content="Angele Louise Louise">
 <title>Lab 1</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -2134,16 +2134,22 @@ p {
 <div id="header">
 <h1>Lab 1</h1>
 <div class="details">
-<span id="author" class="author">Victor Mafra e Angele Louise</span><br>
-<span id="email" class="email">&lt;<a href="mailto:angelealst@hotmail.com">angelealst@hotmail.com</a> e <a href="mailto:vick.vems@gmail.com">vick.vems@gmail.com</a>&gt;</span><br>
+<span id="author" class="author">Angele Louise Louise</span><br>
+<span id="email" class="email">&lt;<a href="mailto:angelealst@hotmail.com">angelealst@hotmail.com</a>&gt;</span><br>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#trueexerc-cio-1">Exercício 1</a></li>
+<li><a href="#trueexerc-cio-1">Exercício 1</a>
+<ul class="sectlevel2">
 <li><a href="#truec-digo-1">Código 1</a></li>
-<li><a href="#trueexerc-cio-2">Exercício 2</a></li>
+</ul>
+</li>
+<li><a href="#trueexerc-cio-2">Exercício 2</a>
+<ul class="sectlevel2">
 <li><a href="#truec-digo-2">Código 2</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -2155,11 +2161,8 @@ p {
 <p>Utilizando o programa teste-make.c como referência, implemente um programa quadrados4.c.
 Este programa deverá desenhar numa janela com fundo branco, de dimensões 256x256 pixels, e quatro quadrados de cores diferentes arranjados na janela.</p>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="truec-digo-1"><a class="anchor" href="#truec-digo-1"></a>Código 1</h2>
-<div class="sectionbody">
+<div class="sect2">
+<h3 id="truec-digo-1"><a class="anchor" href="#truec-digo-1"></a>Código 1</h3>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-cpp" data-lang="cpp">#include &lt;GL/glut.h&gt;
@@ -2233,6 +2236,7 @@ void display(void){
 </div>
 </div>
 </div>
+</div>
 <div class="sect1">
 <h2 id="trueexerc-cio-2"><a class="anchor" href="#trueexerc-cio-2"></a>Exercício 2</h2>
 <div class="sectionbody">
@@ -2243,11 +2247,8 @@ Entretanto, cada uma das cores determinadas para os quatro vértices do quadrado
 Implemente um temporizador para os valores de H mudarem com o tempo para os vértices, produzindo uma pequena animação.
 Comente a linha glShadeModel(GL_FLAT) para que o feito de degradê possa ser visualizado.</p>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="truec-digo-2"><a class="anchor" href="#truec-digo-2"></a>Código 2</h2>
-<div class="sectionbody">
+<div class="sect2">
+<h3 id="truec-digo-2"><a class="anchor" href="#truec-digo-2"></a>Código 2</h3>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-cpp" data-lang="cpp">#include &lt;GL/glut.h&gt;
@@ -2368,9 +2369,10 @@ void display(void){
 </div>
 </div>
 </div>
+</div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-06-17 15:19:52 HPBA
+Last updated 2016-06-20 15:28:43 HPBA
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">
