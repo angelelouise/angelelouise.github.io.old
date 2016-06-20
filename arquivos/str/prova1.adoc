@@ -1,0 +1,180 @@
+= Prova 1
+:Author:    Angele Louise
+:Email:     <angelealst@hotmail.com>
+:toc: left
+
+== Questão 1
+
+Escreva um programa em C/C++ denominado novela.c que faça o seguinte:
+- O processo Pai cria um processo Filho1 em 10 segundos e um processo Filho2 em
+20 segundos e depois fica executando indefinidamente.
+- Cada processo Filho por sua vez também tem um filho (denominados de Neto1 e
+Neto2) depois de 15 segundos após suas respectivas criações. Os processos Filho1, Filho2,
+Neto1 e Neto2 também ficam executando indefinidamente.
+- No instante 50 segundos, Filho1 mata Pai.
+- No instante 55 segundos, Filho1 mata seu filho e se suicida dois segundos depois
+disto.
+ - No instante 60 segundos, Neto2 mata seu pai e se suicida três segundos depois,
+terminando com a saga da família. (fim de novela).
+- A cada segundo cada um dos processos informa seu nome, sua idade, seu PID e
+PID do seu pai.
+
+[source,cpp]
+-----------
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+int main ()
+{
+
+// declarações de variáveis
+  int i;
+  pid_t pid1,pid2, pid3,pid4;          // definindo um identificador de processo - inteiro longo
+  int pidpai,pidfilho1,pidfilho2,pidneto1,pidneto2;
+  printf("Sou o processo Pai \n");
+  system("ps -auxf");
+  
+  pid1 = fork();   // dividindo o processo em dois
+  switch(pid1)
+    {
+      case -1:       // erro na abertura do processo filho
+        exit(1);  
+      case 0:        // Parte a ser executada pelo processo Filho1
+		  pidfilho1=getpid();
+          system("ps -auxf | grep novela &");
+          printf("Sou o processo Filho1 \n");
+		  sleep(15);// espera 15 segundos para criar o neto 1;
+		  pid3=fork();
+		  switch(pid3)
+		  {
+			case -1:       // erro na abertura do processo filho
+			exit(1);  
+			case 0:        // Parte a ser executada pelo processo Neto1
+			pidneto1=getpid();
+			default: //parte a ser executada pelo filho1 que é pai de neto1
+			
+			break;
+			}
+      default:       // parte a ser executada pelo processo Pai
+		   pidpai=getpid();
+           sleep(1);
+           printf("Sou o processo Pai \n");
+           system("ps -auxf | grep novela &");
+        
+		pid2 = fork();
+      switch(pid2)
+      {
+        case -1:    // erro
+           exit(1);
+        case 0:        // Parte a ser executada pelo processo Filho2
+			printf("Sou o processo Filho2 \n");
+			sleep(15);//esperar 15 segundos para criar o neto2;
+			pid4=fork();
+				switch(pid4){
+					case -1:
+						exit(1);
+					case 0://parte a ser executada pelo neto2;
+						for(int i=0; i<50; i++){
+						
+						}
+					
+					default: //parte a ser executada pelo filho2 que é pai do neto2;
+					
+					break;
+				}
+			while(1){
+			 system("ps -auxf | grep novela &");
+			}
+        exit(1);
+        default:  // última parte do processo Pai
+			sleep(1);
+			while(1) {
+			printf("Sou o processo Pai \n");
+			system("ps -auxf | grep novela &");
+			}
+
+        break;
+      }
+   }
+      
+    exit (0);
+
+}
+-----------
+
+== Questão 2
+
+Escreva um programa com interface gráfica (sugestão: IDE Qt), que tenha dois
+botões: um para criar processos idênticos (clone) e outro para se matar. O clone deverá ter
+interface idêntica à de seu criador e indicar o número de seu PID e o número do PID de seu
+processo Pai.
+
+== Questão 3
+
+Escreva um programa em C/C++ que solicita o PID de um processo e executa
+uma das seguintes atividades nesse processo: pausa, continua ou mata.
+[source,cpp]
+---------
+#include <signal.h> // definição dos sinais de interrupções
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h> // system()
+
+
+
+int  main()
+{
+  // o processo que vai matar
+
+  int meu_pid;
+  int pid_vitima;
+  int esc=5;
+  meu_pid = getpid();
+    
+  
+ //printf( "Eu sou um programa matador de programa. Meu PID  %d\n", meu_pid );
+ while(esc!=0){
+	printf( "Para matar digite 1, parar pausar digite 2, para continuar digite 3 e para sair digite 0. Meu PID  %d\n", meu_pid );
+	scanf("%d",&esc);
+	if(esc==1){
+		printf( "Digite o PID do processo que deve morrer: ");
+		scanf( "%d", &pid_vitima);
+		printf("\n Vou matar o processo %d \n", pid_vitima);
+	
+		kill(pid_vitima, SIGKILL);
+		printf( "\nAgora posso morrer tranquilo.\n");
+	}
+	if(esc==2){
+		printf( "Digite o PID do processo que deve pausar: ");
+		scanf( "%d", &pid_vitima);
+		printf("\n Vou pausar o processo %d \n", pid_vitima);
+	
+		kill(pid_vitima, SIGSTOP);
+		printf( "\n Pausado.\n");
+	}
+	if(esc==3){
+		printf( "Digite o PID do processo que deve continuar: ");
+		scanf( "%d", &pid_vitima);
+		printf("\n Vou continuar o processo %d \n", pid_vitima);
+	
+		kill(pid_vitima, SIGCONT);
+		printf( "\n Continua.\n");
+	}
+}
+ exit(0);
+}
+---------
+== Questão 4
+
+Escreva um programa com interface gráfica (sugestão: IDE Qt), que informe
+periodicamente o status dos processos. O programa deve permitir configurar o tempo de
+atualização das informações (sugestão: utilize o comando sleep) e filtrar quais processos
+se deseja monitorar (sugestão: leia uma string correspondente ao utilize o comando ps
+com suas opções ).
+
+=== Código .cpp
+
+em construção...
+    

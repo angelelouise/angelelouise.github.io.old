@@ -1,0 +1,99 @@
+= Data
+:Author:    Angele Louise
+:Email:     <angelealst@hotmail.com>
+
+== Questão
+Quanto tempo em segundos se passaram de 1900 até uma data definida pelo usuário.
+
+== Código
+
+[source,cpp]
+---------
+#include <stdio.h>
+#include <time.h>
+#include <stdlib.h>
+
+
+struct Data{
+   int dia;
+   int mes;
+   int ano;
+}Data;
+
+struct Data aux;
+
+int main(void){
+
+       char data[9];
+       printf("%s \n","Entre com a date no formato dd/mm/aa");
+       scanf("%s",data);
+
+       time_t now;
+       time(&now);
+       struct tm inicio;
+       inicio= *localtime( &now );
+
+       conv(data,&aux);//convertendo meu string em data;
+
+       double seconds,second;
+
+       int a = aux.ano;
+       int b = aux.mes;
+       int c = aux.dia;
+
+       inicio.tm_mday=c;/* day of the month, range 1 to 31  */
+       inicio.tm_mon=b;/* month, range 0 to 11             */
+       inicio.tm_year=a;/* The number of years since 1900   */
+
+       //printf("tempo %i \n",inicio.tm_mday);
+       //printf("tempo %i \n",inicio.tm_mon);
+       //printf("tempo %i \n",inicio.tm_year);
+
+       seconds= now-mktime(&inicio); // diferença entre datas em segundos
+       second = difftime(now,mktime(&inicio)); // converts it to time since epoch as a time_t object
+
+       printf("tempo desde hoje: %d segundos\n",now);
+       printf("tempo desde a data inserida: %d segundos\n",mktime(&inicio));
+       printf("tempo transcorrido: %f segundos\n", seconds);
+       printf("tempo transcorrido: %f segundos\n", second);
+
+
+    return 0;
+}
+void conv(char data[9],struct Data *Alvo){
+    // 0, 1 = dia
+    // 2    = /
+    // 3, 4 = mes
+    // 5    = /
+    // 6, 7 = ano
+    // 8    = NULO
+    char _dia[3]= {
+        data[0],
+        data[1],
+        0
+    };
+    char _mes[3] = {
+        data[3],
+        data[4],
+        0
+    };
+
+    char _ano[3] = {
+        data[6],
+        data[7],
+        0
+    };
+   // printf("%s \n",_dia);
+   // printf("%s \n",_mes);
+   // printf("%s \n",_ano);
+
+    Alvo->dia = atoi(_dia);
+    Alvo->mes = atoi(_mes);
+    Alvo->ano = atoi(_ano);
+
+    //printf("%i \n",Alvo->mes);
+    //printf("%i \n",Alvo->ano);
+   // printf("%i \n",atoi(_ano));
+
+}
+---------
