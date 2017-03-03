@@ -1,0 +1,569 @@
+= Servidor/Cliente UDP e RAW
+:Author:    Angele Louise
+:Email:     <angelealst@hotmail.com>
+:toc: left
+
+Os servidores UDP e RAW foram executados em uma placa beaglebone de modo a contablizar o tempo de transferência de pacotes de um client -> server pelo cabo de rede e wifi.
+
+== RAW Server
+Utilizando socket este servidor vai rodar na placa beaglebone esperando a conexão de um cliente em outra máquina.
+
+[source, cpp]
+--------
+#include <sys/socket.h>
+#include <sys/ioctl.h>
+#include <sys/time.h>
+
+#include <asm/types.h>
+
+#include <math.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <signal.h>
+
+#include <linux/if_packet.h>
+#include <linux/if_ether.h>
+#include <linux/if_arp.h>
+
+#define ETH_MAC_LEN 6  /* tamanho de blocos no mac  */
+
+#define BUF_SIZE 64    /*tamanho do pacote*/
+//#define BUF_SIZE 128  //Max length of buffer
+//#define BUF_SIZE 256  //Max length of buffer
+//#define BUF_SIZE 512  //Max length of buffer
+//#define BUF_SIZE 1024  //Max length of buffer
+#define DEVICE "eth0" /*Meio por onde vai enviar*/
+#define ETH_P_NULL  0x0		/* Nenhum protocolo acima da camada ethernet*/
+
+void sigint(int signum);
+
+int s = 0;
+void* buffer = NULL;
+long total_packets = 0;
+long answered_packets = 0;
+
+int main(void) {
+	buffer = (void*)malloc(BUF_SIZE); 	/*buffer para envio dos pacotes*/
+	unsigned char* etherhead = buffer;	/*Ponteiro para o cabeçalho ethernet*/
+	struct ethhdr *eh = (struct ethhdr *)etherhead; /*outro ponteiro para o cabeçalho ethernet*/
+
+	unsigned char src_mac[6];		/*Mac do servidor*/
+
+	struct ifreq ifr;
+	struct sockaddr_ll socket_address;
+	int ifindex = 0;			
+	int i;
+	int length;				
+	int sent;
+
+	printf("Socket Servidor...\n");
+
+	s = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
+	if (s == -1) {
+		perror("socket():");
+	        exit(1);
+	}
+	printf("Servidor Aberto: %i\n", s);
+	
+	/*retrieve ethernet interface index / recupera o index da ethernet*/
+	strncpy(ifr.ifr_name, DEVICE, IFNAMSIZ);
+	if (ioctl(s, SIOCGIFINDEX, &ifr) == -1) {
+		perror("SIOCGIFINDEX");
+		exit(1);
+	}
+	ifindex = ifr.ifr_ifindex;
+	printf("interface index: %i\n", ifindex);
+	
+	/*retrieve corresponding MAC / recupera o MAC correspondente*/
+	if (ioctl(s, SIOCGIFHWADDR, &ifr) == -1) {
+		perror("SIOCGIFINDEX");
+		exit(1);
+	}
+        for (i = 0; i < 6; i++) {
+		src_mac[i] = ifr.ifr_hwaddr.sa_data[i];
+	}
+	printf("MAC address: %02X:%02X:%02X:%02X:%02X:%02X\n", 
+			src_mac[0],src_mac[1],src_mac[2],src_mac[3],src_mac[4],src_mac[5]);
+
+	
+	socket_address.sll_family   = PF_PACKET;
+	socket_address.sll_protocol = htons(ETH_P_IP);
+	socket_address.sll_ifindex  = ifindex;
+	socket_address.sll_hatype   = ARPHRD_ETHER;
+	socket_address.sll_pkttype  = PACKET_OTHERHOST;
+	socket_address.sll_halen    = ETH_ALEN;
+	socket_address.sll_addr[6]  = 0x00; 
+	socket_address.sll_addr[7]  = 0x00;
+														
+	
+	/*establish signal handler / estabelecendo um handler de sinal*/
+	signal(SIGINT, sigint);
+
+	while (1) {
+		/*Wait for incoming packet / Espera por pacotes*/	
+		length = recvfrom(s, buffer, BUF_SIZE, 0, NULL, NULL);
+		if (length == -1) {
+			perror("recvfrom():");
+			exit(1);
+		}
+
+		/*See if we should answer (Ethertype == 0x0 && destination address == our MAC) / verifica se devemos responder (Ethertype== 0x0 && endereço de destino == nosso MAC)*/
+		if (eh->h_proto == ETH_P_NULL && memcmp( (const void*)eh->h_dest, (const void*)src_mac, ETH_MAC_LEN) == 0 ) {
+		
+			/*exchange addresses in buffer / troca endereços no buffer*/
+			memcpy( (void*)etherhead, (const void*)(etherhead+ETH_MAC_LEN), ETH_MAC_LEN);
+			memcpy( (void*)(etherhead+ETH_MAC_LEN), (const void*)src_mac, ETH_MAC_LEN);
+			
+			/*prepare sockaddr_ll / preparar sockaddr_ll*/
+			socket_address.sll_addr[0]  = eh->h_dest[0];
+			socket_address.sll_addr[1]  = eh->h_dest[1];
+			socket_address.sll_addr[2]  = eh->h_dest[2];
+			socket_address.sll_addr[3]  = eh->h_dest[3];
+			socket_address.sll_addr[4]  = eh->h_dest[4];
+			socket_address.sll_addr[5]  = eh->h_dest[5];
+
+			/*send answer / enviar resposta*/
+			sent = sendto(s, buffer, BUF_SIZE, 0, (struct sockaddr*)&socket_address, sizeof(socket_address));
+			if (sent == -1) {
+				perror("sendto():");
+				exit(1);
+			}
+			
+			answered_packets++;
+		}
+
+		total_packets++;
+	}
+}
+
+void sigint(int signum) {
+	/*Clean up / limpando tudo*/
+
+	struct ifreq ifr;
+
+        if (s == -1)
+        	return;
+	
+	strncpy(ifr.ifr_name, DEVICE, IFNAMSIZ);
+	ioctl(s, SIOCGIFFLAGS, &ifr);
+	ifr.ifr_flags &= ~IFF_PROMISC;
+	ioctl(s, SIOCSIFFLAGS, &ifr);
+	close(s);
+
+	free(buffer);
+	
+	printf("\n");
+
+	printf("Totally received: %ld packets\n", total_packets);
+	printf("Answered %ld packets\n", answered_packets);
+	exit(0);
+}
+--------
+
+== RAW Cliente
+Em um notebook esse cliente se conecta ao servidor da beaglebone e envia/recebe pacotes e calcula o tempo que levou.
+
+[source, cpp]
+--------
+
+
+#include <sys/socket.h>
+#include <sys/ioctl.h>
+#include <sys/time.h>
+
+#include <asm/types.h>
+
+#include <math.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <signal.h>
+
+#include <linux/if_packet.h>
+#include <linux/if_ether.h>
+#include <linux/if_arp.h>
+
+#define ETH_MAC_LEN 6      /* tamanho de blocos no mac  */
+#define ETH_P_NULL  0x0	   /* Nenhum protocolo acima da camada ethernet*/
+
+#define BUF_SIZE 64    /*tamanho do pacote*/
+//#define BUF_SIZE 128  //Max length of buffer
+//#define BUF_SIZE 256  //Max length of buffer
+//#define BUF_SIZE 512  //Max length of buffer
+//#define BUF_SIZE 1024  //Max length of buffer
+#define DEVICE "eth0" /*Meio por onde vai enviar*/
+#define quantidadePacotes 1000 /*Número de pacotes enviados*/
+
+void sigint(int signum);
+
+int s = 0; /*Socketdescriptor*/
+void* buffer = NULL;
+long total_sent_packets = 0;
+
+int main(void) {
+	buffer = (void*)malloc(BUF_SIZE); 	/*buffer para envio dos pacotes*/
+	unsigned char* etherhead = buffer;	/*Ponteiro para o cabeçalho ethernet*/
+	unsigned char* data = buffer + 14;	/*Dados a serem enviados, tamanho buffer+6(mac source)+6(mac dest)+2(ip type)*/
+	struct ethhdr *eh = (struct ethhdr *)etherhead; /*outro ponteiro para o cabeçalho ethernet*/
+
+	unsigned char src_mac[6];		/*Mac do cliente*/ 
+	unsigned char dest_mac[6] = {0x1c, 0xba, 0x8c, 0x9c, 0xca, 0x46};	/*mac servidor (destino) placa*/
+	//unsigned char dest_mac[6] = {0xd0, 0x67, 0xe5, 0xf6, 0x25, 0xbe};	/*mac servidor (destino) meu pc loopback*/
+
+	struct ifreq ifr;
+	struct sockaddr_ll socket_address;
+	int ifindex = 0;			/*Ethernet Interface index*/
+	int i,j,k,l;
+	int length;				/*tamanho do pacote */
+	int sent;				/*tamanho do pacote enviado*/
+
+	
+		struct timeval begin;
+        struct timeval end;
+        struct timeval result;
+        unsigned long long allovertime;
+		unsigned long long tempo[1000];		
+
+	printf("Socket Cliente...\n");
+
+	
+	s = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
+	if (s == -1) {
+		perror("socket():");
+	        exit(1);
+	}
+	printf("Cliente Aberto: %i\n", s);
+	
+	/*retrieve ethernet interface index*/
+	strncpy(ifr.ifr_name, DEVICE, IFNAMSIZ);
+	if (ioctl(s, SIOCGIFINDEX, &ifr) == -1) {
+		perror("SIOCGIFINDEX");
+		exit(1);
+	}
+	ifindex = ifr.ifr_ifindex;
+	printf("interface index: %i\n", ifindex);
+	
+	/*retrieve corresponding MAC*/
+	if (ioctl(s, SIOCGIFHWADDR, &ifr) == -1) {
+		perror("SIOCGIFINDEX");
+		exit(1);
+	}
+        for (i = 0; i < 6; i++) {
+		src_mac[i] = ifr.ifr_hwaddr.sa_data[i];
+	}
+	printf("MAC Cliente: %02X:%02X:%02X:%02X:%02X:%02X\n", 
+			src_mac[0],src_mac[1],src_mac[2],src_mac[3],src_mac[4],src_mac[5]);
+
+	/*endereço socket */
+	socket_address.sll_family   = PF_PACKET;
+	socket_address.sll_protocol = htons(ETH_P_IP);
+	socket_address.sll_ifindex  = ifindex;
+	socket_address.sll_hatype   = ARPHRD_ETHER;
+	socket_address.sll_pkttype  = PACKET_OTHERHOST;
+	socket_address.sll_halen    = ETH_ALEN;
+	socket_address.sll_addr[0]  = dest_mac[0];
+	socket_address.sll_addr[1]  = dest_mac[1];
+    socket_address.sll_addr[2]  = dest_mac[2];
+    socket_address.sll_addr[3]  = dest_mac[3];
+    socket_address.sll_addr[4]  = dest_mac[4];
+    socket_address.sll_addr[5]  = dest_mac[5];
+	socket_address.sll_addr[6]  = 0x00; 
+	socket_address.sll_addr[7]  = 0x00;
+														
+	
+	/*establish signal handler*/
+	signal(SIGINT, sigint);
+
+	
+	srand(time(NULL));
+
+		allovertime = 0;
+		
+		for (k = 0; k < quantidadePacotes; k++) {
+			/*prepare buffer / prepara o buffer*/
+			memcpy((void*)buffer, (void*)dest_mac, ETH_MAC_LEN);
+			memcpy((void*)(buffer+ETH_MAC_LEN), (void*)src_mac, ETH_MAC_LEN);
+			eh->h_proto = ETH_P_NULL;
+			/*fill it with random data / preenche com dados aleatórios*/
+			for (j = 0; j < i; j++) {
+				data[j] = (unsigned char)((int) (255.0*rand()/(RAND_MAX+1.0)));
+			}
+	
+			/*clear the timers / limpa os timers*/
+				timerclear(&begin);
+		        timerclear(&end);
+	
+			/*get time before sending / pega a hora antes de enviar*/
+		        gettimeofday(&begin,NULL);
+					
+	
+			/*send packet / envia o pacote*/
+			sent = sendto(s, buffer, BUF_SIZE, 0, (struct sockaddr*)&socket_address, sizeof(socket_address));
+			if (sent == -1) {
+				perror("sendto():");
+				exit(1);
+			}
+				
+			/*Wait for incoming packet / espera por pacotes*/
+			length = recvfrom(s, buffer, BUF_SIZE, 0, NULL, NULL);
+			if (length == -1) {
+				perror("recvfrom():");
+				exit(1);
+			}
+	
+			/*get time after sending / pega a hora depois de enviar*/
+			gettimeofday(&end,NULL);
+			/*...and calculate difference.........*/
+			timersub(&end,&begin,&result); 
+			
+	        tempo[k] = ((result.tv_sec * 1000000 ) + result.tv_usec )/2;        
+		    allovertime += ((result.tv_sec * 1000000 ) + result.tv_usec )/2;
+			//tempo[k] = (((end.tv_sec-begin.tv_sec) * 1000000  + end.tv_usec) -  begin.tv_usec)/2;
+			//allovertime += (((end.tv_sec-begin.tv_sec) * 1000000  + end.tv_usec) -  begin.tv_usec)/2;
+			total_sent_packets++;
+		}
+
+		printf("Pacote enviado %i ,Tempo %lld microseconds\n",BUF_SIZE ,allovertime/quantidadePacotes);
+		for(l=0;l<quantidadePacotes;l++){
+		
+		printf( " %lld \n", tempo[l]);
+		printf( "\n");
+		
+		}	
+}
+
+void sigint(int signum) {
+	/*Clean up / Limpar tudo*/
+
+	struct ifreq ifr;
+
+        if (s == -1)
+        	return;
+	
+	strncpy(ifr.ifr_name, DEVICE, IFNAMSIZ);
+	ioctl(s, SIOCGIFFLAGS, &ifr);
+	ifr.ifr_flags &= ~IFF_PROMISC;
+	ioctl(s, SIOCSIFFLAGS, &ifr);
+	close(s);
+
+	free(buffer);
+	
+	//printf("Client terminating....\n");
+
+	//printf("Totally sent: %d packets\n", total_sent_packets);
+	exit(0);
+}
+--------
+
+== UDP server
+
+[source, cpp]
+--------
+/*
+  server
+*/
+#include<stdio.h> //printf
+#include<string.h> //memset
+#include<stdlib.h> //exit(0);
+#include<arpa/inet.h>
+#include<sys/socket.h>
+ 
+//#define BUFLEN 64  //Max length of buffer
+//#define BUFLEN 128  //Max length of buffer
+//#define BUFLEN 256  //Max length of buffer
+//#define BUFLEN 512  //Max length of buffer
+#define BUFLEN 1024  //Max length of buffer
+ 
+void die(char *s)
+{
+    perror(s);
+    exit(1);
+}
+ 
+int main(void)
+{
+    int server_sockfd, client_sockfd;
+   	size_t server_len;
+   	socklen_t client_len;
+   	struct sockaddr_in server_address;
+   	struct sockaddr_in client_address;
+	unsigned short porta = 9735;
+    int i, slen = sizeof(client_address) , recv_len;
+    char buf[BUFLEN];
+	
+    unlink("server_socket");
+    //create a UDP socket
+	printf("Criando Socket");
+    if ((server_sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) <0)
+    {
+        printf("Erro em criar o socket");
+		die("socket");
+    }
+     
+    // zero out the structure
+    memset((char *) &server_address, 0, sizeof(server_address));
+     
+    server_address.sin_family = AF_INET;
+    server_address.sin_port = htons(porta);
+    server_address.sin_addr.s_addr = htonl(INADDR_ANY);
+	
+	
+    //bind socket to port
+	printf("Binding socket");
+    if( bind(server_sockfd, (struct sockaddr*)&server_address, sizeof(server_address) ) <0)
+    {
+        printf("Erro no binding");
+		die("bind");
+    }
+     
+    //keep listening for data / verifica constantemente se tem dados pra serem ouvidos
+	while(1){
+		//inicializando buffer
+		memset(buf,0x0,BUFLEN);
+		
+    	printf("Esperando dados...");
+	    	
+        //try to receive some data, this is a blocking call / tenta receber algum dado, chamada bloqueante
+        if ((recv_len = recvfrom(server_sockfd, buf, BUFLEN, 0, (struct sockaddr *) &client_address, &slen)) == -1)
+        {
+            printf("Erro em receber data");
+			die("recvfrom()");
+
+        }
+         
+        //print details of the client/peer and the data received / mostra detalhes do cliente e os dados recebidos
+        printf("Received packet from %s:%d\n", inet_ntoa(client_address.sin_addr), ntohs(client_address.sin_port));
+        printf("Data: %s\n" , buf);
+        
+        //now reply the client with the same data / agora responde o cliente com a mesma data que ele enviou
+        if (sendto(server_sockfd, buf, recv_len, 0, (struct sockaddr*) &client_address, slen) <0)
+        {
+            die("sendto()");
+        }
+	}
+    
+    close(server_sockfd);
+    return 0;
+}
+--------
+
+== UDP Cliente
+
+[source, cpp]
+--------
+/*
+  client
+*/
+#include<stdio.h> //printf
+#include<string.h> //memset
+#include<stdlib.h> //exit(0);
+#include<arpa/inet.h>
+#include<sys/socket.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h> /* memset() */
+#include <sys/time.h> /* select() */ 
+#include <time.h> 
+#include <math.h>
+
+//#define BUFLEN 64  //Max length of buffer
+//#define BUFLEN 128  //Max length of buffer
+//#define BUFLEN 256  //Max length of buffer
+//#define BUFLEN 512  //Max length of buffer
+//#define BUFLEN 1024  //Max length of buffer
+ 
+void die(char *s)
+{
+    perror(s);
+    exit(1);
+}
+ 
+int main(int argc, char *argv[])
+{
+    int sockfd;
+   	int len;
+   	socklen_t len_recv;
+   	struct sockaddr_in address, cliAddr;
+    int k, i, j,l, slen=sizeof(address);
+    char buf[BUFLEN];
+    char message[BUFLEN];
+	unsigned short porta = 9735;
+	struct timeval begin;
+    struct timeval end;
+    struct timeval result;
+	unsigned long long somatempo;
+	unsigned long long tempo[1000];
+	FILE *p;
+	char *str="saida.txt";
+
+   	address.sin_family = AF_INET;//The first parameter family specifies the communication protocol used
+    //address.sin_addr.s_addr = inet_addr("192.168.1.107");
+	address.sin_addr.s_addr = inet_addr("192.168.1.102");
+   	address.sin_port = htons(porta);
+	
+	// criacao do socket 	
+	sockfd  = socket(AF_INET, SOCK_DGRAM,IPPROTO_UDP);  
+	
+	/* bind porta*/ 
+  	cliAddr.sin_family = AF_INET;
+  	cliAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+  	cliAddr.sin_port = htons(0);
+  
+  	if(bind(sockfd, (struct sockaddr *) &cliAddr, sizeof(cliAddr))<0) {
+  	  printf("%s: cannot bind port\n", argv[0]);
+  	  exit(1);
+  	}
+
+   	len = sizeof(address);
+   	len_recv = sizeof(address);
+	
+	for(j=0;j<BUFLEN; j++){
+		message[j] = 'A';
+	}
+	somatempo = 0;
+	
+    for(i=0;i<=1000;i++){//numero de envios
+
+			timerclear(&begin);
+			timerclear(&end);
+			//timerclear(&result);
+
+			gettimeofday(&begin,NULL);
+
+			sendto(sockfd,  message, sizeof(message),0,(struct sockaddr *) &address, len);
+			recvfrom(sockfd, buf, sizeof(buf),0,(struct sockaddr *) &address, &len_recv);
+
+			gettimeofday(&end,NULL);
+
+			timersub(&end,&begin,&result); 
+
+			tempo[i] = ((result.tv_sec * 1000000 ) + result.tv_usec )/2;
+			somatempo+= ((result.tv_sec * 1000000 ) + result.tv_usec )/2;
+
+			//printf( "mensagem = %s \n", message);
+			//printf( "Caracter vindo do servidor = %s \n", buf);
+
+
+   }
+	printf("Sending %i bytes takes %lld microseconds in average\n",i ,somatempo/1000);
+	printf("tempos\n");
+	
+	for(k=0;k<1000;k++){
+		
+		printf( " %lld \n", tempo[k]);
+		printf( "\n");
+	}
+	
+    close(sockfd);
+    return 0;
+}
+--------
+
+link:index.html[Voltar]

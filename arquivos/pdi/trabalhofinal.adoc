@@ -230,3 +230,4 @@ Os arquivos de Layout nos links:
 https://github.com/angelelouise/angelelouise.github.io/blob/master/arquivos/pdi/imagens_final/Arquivos%20principais/Arquivos%20layout/activity_face_detection.xml[Link 1]
 https://github.com/angelelouise/angelelouise.github.io/blob/master/arquivos/pdi/imagens_final/Arquivos%20principais/Arquivos%20layout/content_face_detection.xml[Link 2]
 
+link:index.html[Voltar]

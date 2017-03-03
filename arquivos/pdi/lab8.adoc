@@ -289,3 +289,5 @@ image::experimento-cave.png[]
 image::xray.png[]
 .Filtro
 image::raiox.png[]
+
+link:index.html[Voltar]

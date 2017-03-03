@@ -5,8 +5,8 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.5.dev">
-<meta name="author" content="Victor Mafra e Angele Louise">
-<title>Preenchendo regiões</title>
+<meta name="author" content="Angele Louise">
+<title>Servidor/Cliente UDP e RAW</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -421,183 +421,601 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1>Preenchendo regiões</h1>
+<h1>Servidor/Cliente UDP e RAW</h1>
 <div class="details">
-<span id="author" class="author">Victor Mafra e Angele Louise</span><br>
-<span id="email" class="email">&lt;<a href="mailto:angelealst@hotmail.com">angelealst@hotmail.com</a> e <a href="mailto:vick.vems@gmail.com">vick.vems@gmail.com</a>&gt;</span><br>
+<span id="author" class="author">Angele Louise</span><br>
+<span id="email" class="email">&lt;<a href="mailto:angelealst@hotmail.com">angelealst@hotmail.com</a>&gt;</span><br>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#trueq-1">Q.1</a></li>
-<li><a href="#trueq-2">Q.2</a></li>
-<li><a href="#truec-digo-1">Código 1</a></li>
+<li><a href="#trueraw-server">RAW Server</a></li>
+<li><a href="#trueraw-cliente">RAW Cliente</a></li>
+<li><a href="#trueudp-server">UDP server</a></li>
+<li><a href="#trueudp-cliente">UDP Cliente</a></li>
 </ul>
 </div>
 </div>
 <div id="content">
-<div class="sect1">
-<h2 id="trueq-1"><a class="anchor" href="#trueq-1"></a>Q.1</h2>
+<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>Observando-se o programa labeling.cpp como exemplo, é possível verificar que caso existam mais de 255 objetos na cena, o processo de rotulação poderá ficar comprometido. Identifique a situação em que isso ocorre e proponha uma solução para este problema.</p>
-</div>
-<div class="exampleblock">
-<div class="content">
-<div class="literalblock">
-<div class="content">
-<pre>Existem situações em que há similaridade entre as características dos elementos, fator que abre espaço para a catalogação dos mesmos em uma única cor. É o caso do exemplo a seguir, pois a distinção entre os elementos se dá por uma característica(com e sem furo), o que permite agrupar N elementos da imagem em dois grupos distintos, ocupando apenas 2 tons de cinza.</pre>
-</div>
-</div>
-</div>
+<p>Os servidores UDP e RAW foram executados em uma placa beaglebone de modo a contablizar o tempo de transferência de pacotes de um client &#8594; server pelo cabo de rede e wifi.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="trueq-2"><a class="anchor" href="#trueq-2"></a>Q.2</h2>
+<h2 id="trueraw-server"><a class="anchor" href="#trueraw-server"></a>RAW Server</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Aprimore o algoritmo de contagem apresentado para identificar regiões com ou sem buracos internos que existam na cena. Assuma que objetos com mais de um buraco podem existir. Inclua suporte no seu algoritmo para não contar bolhas que tocam as bordas da imagem. Não se pode presumir, a priori, que elas tenham buracos ou não.</p>
+<p>Utilizando socket este servidor vai rodar na placa beaglebone esperando a conexão de um cliente em outra máquina.</p>
 </div>
-<div class="exampleblock">
-<div class="content">
-<div class="literalblock">
-<div class="content">
-<pre>Primeiramente há a remoção dos objetos que estão tocando as bordas na etapa 1, visto que suas características são duvidosas devido a incerteza do que há além das bordas.
-Na etapa dois há a mudança da cor de fundo do ponto p(0,0) através do método floodFill, cujos 3 parâmetros são respectivamente: variável da imagem carregada, variável do ponto p e o valor da cor a ser pintado. O novo tom de cinza escolhido foi 1, com a finalidade de evidenciar os buracos nas bolhas que agora estão 1 nível abaixo do tom de cinza do fundo.
-Na etapa três a imagem é percorrida do início ao fim a procura de pixels com tonalidade 0, que correspondem aos buracos nas bolhas. Em caso de sucesso na busca é verificado a cor do pixel prontamente anterior ao buraco, que corresponde a estrutura da bolha. Caso ela possua tonalidade 255, evidencia uma bolha não contada, o método floodFill é utilizado no ponto p da bolha para tonalidade de valor 100(valor escolhido para bolhas com buracos). Caso o valor anterior a um buraco seja de cor diferente de 255 nada é feito, pois corresponde a um n-ezimo buraco de uma bolha já catalogada.
-Na etapa quatro as bolhas sem buraco são catalogadas usando sistema semelhante ao anterior, porém utilizando valor de tom de cinza 200 no floodFill.</pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="truec-digo-1"><a class="anchor" href="#truec-digo-1"></a>Código 1</h2>
-<div class="sectionbody">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-cpp" data-lang="cpp">#include &lt;iostream&gt;
-#include &lt;opencv2/opencv.hpp&gt;
+<pre class="highlightjs highlight"><code class="language-cpp" data-lang="cpp">#include &lt;sys/socket.h&gt;
+#include &lt;sys/ioctl.h&gt;
+#include &lt;sys/time.h&gt;
 
-using namespace cv;
+#include &lt;asm/types.h&gt;
 
-int main(int argc, char** argv){
-  Mat image, mask;
-  int width, height;
-  int nobjects, nobjectsB, objcolor, chosenColor;
+#include &lt;math.h&gt;
+#include &lt;string.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;signal.h&gt;
 
-  CvPoint p;
-  image = imread(argv[1],CV_LOAD_IMAGE_GRAYSCALE);
+#include &lt;linux/if_packet.h&gt;
+#include &lt;linux/if_ether.h&gt;
+#include &lt;linux/if_arp.h&gt;
 
-  if(!image.data){
-    std::cout &lt;&lt; "imagem nao carregou corretamente\n";
-    return(-1);
-  }
-  width=image.size().width;
-  height=image.size().height;
+#define ETH_MAC_LEN 6  /* tamanho de blocos no mac  */
 
-  p.x=0;
-  p.y=0;
+#define BUF_SIZE 64    /*tamanho do pacote*/
+//#define BUF_SIZE 128  //Max length of buffer
+//#define BUF_SIZE 256  //Max length of buffer
+//#define BUF_SIZE 512  //Max length of buffer
+//#define BUF_SIZE 1024  //Max length of buffer
+#define DEVICE "eth0" /*Meio por onde vai enviar*/
+#define ETH_P_NULL  0x0		/* Nenhum protocolo acima da camada ethernet*/
 
-  // --etapa 1-- remove objetos das bordas
-  //vascula bordas verticais
-    for(int i=0; i&lt;height; i++){
-		if(image.at&lt;uchar&gt;(i,0)==255){
-			p.x=0;
-			p.y=i;
-			floodFill(image,p,0);
-		}
+void sigint(int signum);
 
-		if(image.at&lt;uchar&gt;(i,width-1)==255){
-			p.x=width-1;
-			p.y=i;
-			floodFill(image,p,0);
-		}
+int s = 0;
+void* buffer = NULL;
+long total_packets = 0;
+long answered_packets = 0;
+
+int main(void) {
+	buffer = (void*)malloc(BUF_SIZE); 	/*buffer para envio dos pacotes*/
+	unsigned char* etherhead = buffer;	/*Ponteiro para o cabeçalho ethernet*/
+	struct ethhdr *eh = (struct ethhdr *)etherhead; /*outro ponteiro para o cabeçalho ethernet*/
+
+	unsigned char src_mac[6];		/*Mac do servidor*/
+
+	struct ifreq ifr;
+	struct sockaddr_ll socket_address;
+	int ifindex = 0;
+	int i;
+	int length;
+	int sent;
+
+	printf("Socket Servidor...\n");
+
+	s = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
+	if (s == -1) {
+		perror("socket():");
+	        exit(1);
 	}
+	printf("Servidor Aberto: %i\n", s);
 
-	//vasculha bordas horizontais
-	    for(int j=1; j&lt;width-1; j++){
-		if(image.at&lt;uchar&gt;(0,j)==255){
-			p.x=j;
-			p.y=0;
-			floodFill(image,p,0);
+	/*retrieve ethernet interface index / recupera o index da ethernet*/
+	strncpy(ifr.ifr_name, DEVICE, IFNAMSIZ);
+	if (ioctl(s, SIOCGIFINDEX, &amp;ifr) == -1) {
+		perror("SIOCGIFINDEX");
+		exit(1);
+	}
+	ifindex = ifr.ifr_ifindex;
+	printf("interface index: %i\n", ifindex);
+
+	/*retrieve corresponding MAC / recupera o MAC correspondente*/
+	if (ioctl(s, SIOCGIFHWADDR, &amp;ifr) == -1) {
+		perror("SIOCGIFINDEX");
+		exit(1);
+	}
+        for (i = 0; i &lt; 6; i++) {
+		src_mac[i] = ifr.ifr_hwaddr.sa_data[i];
+	}
+	printf("MAC address: %02X:%02X:%02X:%02X:%02X:%02X\n",
+			src_mac[0],src_mac[1],src_mac[2],src_mac[3],src_mac[4],src_mac[5]);
+
+
+	socket_address.sll_family   = PF_PACKET;
+	socket_address.sll_protocol = htons(ETH_P_IP);
+	socket_address.sll_ifindex  = ifindex;
+	socket_address.sll_hatype   = ARPHRD_ETHER;
+	socket_address.sll_pkttype  = PACKET_OTHERHOST;
+	socket_address.sll_halen    = ETH_ALEN;
+	socket_address.sll_addr[6]  = 0x00;
+	socket_address.sll_addr[7]  = 0x00;
+
+
+	/*establish signal handler / estabelecendo um handler de sinal*/
+	signal(SIGINT, sigint);
+
+	while (1) {
+		/*Wait for incoming packet / Espera por pacotes*/
+		length = recvfrom(s, buffer, BUF_SIZE, 0, NULL, NULL);
+		if (length == -1) {
+			perror("recvfrom():");
+			exit(1);
 		}
 
-		if(image.at&lt;uchar&gt;(height-1,j)==255){
-			p.x=j;
-			p.y=height-1;
-			floodFill(image,p,0);
+		/*See if we should answer (Ethertype == 0x0 &amp;&amp; destination address == our MAC) / verifica se devemos responder (Ethertype== 0x0 &amp;&amp; endereço de destino == nosso MAC)*/
+		if (eh-&gt;h_proto == ETH_P_NULL &amp;&amp; memcmp( (const void*)eh-&gt;h_dest, (const void*)src_mac, ETH_MAC_LEN) == 0 ) {
+
+			/*exchange addresses in buffer / troca endereços no buffer*/
+			memcpy( (void*)etherhead, (const void*)(etherhead+ETH_MAC_LEN), ETH_MAC_LEN);
+			memcpy( (void*)(etherhead+ETH_MAC_LEN), (const void*)src_mac, ETH_MAC_LEN);
+
+			/*prepare sockaddr_ll / preparar sockaddr_ll*/
+			socket_address.sll_addr[0]  = eh-&gt;h_dest[0];
+			socket_address.sll_addr[1]  = eh-&gt;h_dest[1];
+			socket_address.sll_addr[2]  = eh-&gt;h_dest[2];
+			socket_address.sll_addr[3]  = eh-&gt;h_dest[3];
+			socket_address.sll_addr[4]  = eh-&gt;h_dest[4];
+			socket_address.sll_addr[5]  = eh-&gt;h_dest[5];
+
+			/*send answer / enviar resposta*/
+			sent = sendto(s, buffer, BUF_SIZE, 0, (struct sockaddr*)&amp;socket_address, sizeof(socket_address));
+			if (sent == -1) {
+				perror("sendto():");
+				exit(1);
+			}
+
+			answered_packets++;
 		}
+
+		total_packets++;
 	}
-  //FIM--etapa 1--
+}
 
-  //--etapa 2-- Aplica floodfill no ponto (0,0) e pinta o fundo de tom de cinza 1
-  p.x=0;
-  p.y=0;
-  floodFill(image,p,1);
-  //FIM--etapa 2--
+void sigint(int signum) {
+	/*Clean up / limpando tudo*/
 
-  //inicializando a contagem
-  nobjectsB=0;
-  nobjects=0;
+	struct ifreq ifr;
 
-  //--etapa 3-- busca de bolhas com furos
-  objcolor=100;
-  for(int i=0; i&lt;height; i++){
-    for(int j=0; j&lt;width; j++){
-      if(image.at&lt;uchar&gt;(i,j) == 0){
-		//caso o pixel possua tom de cinza ==0 é ocorrência de buraco
-		if(image.at&lt;uchar&gt;(i,j-1)==255){
-			//se o pixel anterior a ocorrência de um buraco for igual a 255
-			//significa que a bolha daquele buraco ainda não foi pintada
-			//pinta bolha e contabiliza.
-			chosenColor=objcolor;
-			nobjectsB++;
-			p.y=i;
-			p.x=j-1;
-			floodFill(image,p,chosenColor);
-		}
-	  }
-	}
-  }
-  //--FIM etapa 3--
+        if (s == -1)
+        	return;
 
-  //--etapa 4-- busca pelas bolas que sobraram
-  objcolor=200;
-  for(int i=0; i&lt;height; i++){
-    for(int j=0; j&lt;width; j++){
-      if(image.at&lt;uchar&gt;(i,j) == 255){
-		// achou um objeto
-		nobjects++;
-		p.x=j;
-		p.y=i;
-		floodFill(image,p,objcolor);
-	  }
-	}
-  }
+	strncpy(ifr.ifr_name, DEVICE, IFNAMSIZ);
+	ioctl(s, SIOCGIFFLAGS, &amp;ifr);
+	ifr.ifr_flags &amp;= ~IFF_PROMISC;
+	ioctl(s, SIOCSIFFLAGS, &amp;ifr);
+	close(s);
 
-  std::cout&lt;&lt;"Bolhas inteiras: "&lt;&lt;nobjects&lt;&lt;" bolhas com buracos:"&lt;&lt;nobjectsB&lt;&lt;" total de bolhas:"&lt;&lt;(nobjectsB+nobjects)&lt;&lt;std::endl;
+	free(buffer);
 
-  imshow("image", image);
-  imwrite("labeling.png", image);
-  waitKey();
-  return 0;
+	printf("\n");
+
+	printf("Totally received: %ld packets\n", total_packets);
+	printf("Answered %ld packets\n", answered_packets);
+	exit(0);
 }</code></pre>
 </div>
 </div>
-<div class="imageblock">
+</div>
+</div>
+<div class="sect1">
+<h2 id="trueraw-cliente"><a class="anchor" href="#trueraw-cliente"></a>RAW Cliente</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Em um notebook esse cliente se conecta ao servidor da beaglebone e envia/recebe pacotes e calcula o tempo que levou.</p>
+</div>
+<div class="listingblock">
 <div class="content">
-<img src="bolhas.png" alt="bolhas.png">
+<pre class="highlightjs highlight"><code class="language-cpp" data-lang="cpp">#include &lt;sys/socket.h&gt;
+#include &lt;sys/ioctl.h&gt;
+#include &lt;sys/time.h&gt;
+
+#include &lt;asm/types.h&gt;
+
+#include &lt;math.h&gt;
+#include &lt;string.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;signal.h&gt;
+
+#include &lt;linux/if_packet.h&gt;
+#include &lt;linux/if_ether.h&gt;
+#include &lt;linux/if_arp.h&gt;
+
+#define ETH_MAC_LEN 6      /* tamanho de blocos no mac  */
+#define ETH_P_NULL  0x0	   /* Nenhum protocolo acima da camada ethernet*/
+
+#define BUF_SIZE 64    /*tamanho do pacote*/
+//#define BUF_SIZE 128  //Max length of buffer
+//#define BUF_SIZE 256  //Max length of buffer
+//#define BUF_SIZE 512  //Max length of buffer
+//#define BUF_SIZE 1024  //Max length of buffer
+#define DEVICE "eth0" /*Meio por onde vai enviar*/
+#define quantidadePacotes 1000 /*Número de pacotes enviados*/
+
+void sigint(int signum);
+
+int s = 0; /*Socketdescriptor*/
+void* buffer = NULL;
+long total_sent_packets = 0;
+
+int main(void) {
+	buffer = (void*)malloc(BUF_SIZE); 	/*buffer para envio dos pacotes*/
+	unsigned char* etherhead = buffer;	/*Ponteiro para o cabeçalho ethernet*/
+	unsigned char* data = buffer + 14;	/*Dados a serem enviados, tamanho buffer+6(mac source)+6(mac dest)+2(ip type)*/
+	struct ethhdr *eh = (struct ethhdr *)etherhead; /*outro ponteiro para o cabeçalho ethernet*/
+
+	unsigned char src_mac[6];		/*Mac do cliente*/
+	unsigned char dest_mac[6] = {0x1c, 0xba, 0x8c, 0x9c, 0xca, 0x46};	/*mac servidor (destino) placa*/
+	//unsigned char dest_mac[6] = {0xd0, 0x67, 0xe5, 0xf6, 0x25, 0xbe};	/*mac servidor (destino) meu pc loopback*/
+
+	struct ifreq ifr;
+	struct sockaddr_ll socket_address;
+	int ifindex = 0;			/*Ethernet Interface index*/
+	int i,j,k,l;
+	int length;				/*tamanho do pacote */
+	int sent;				/*tamanho do pacote enviado*/
+
+
+		struct timeval begin;
+        struct timeval end;
+        struct timeval result;
+        unsigned long long allovertime;
+		unsigned long long tempo[1000];
+
+	printf("Socket Cliente...\n");
+
+
+	s = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
+	if (s == -1) {
+		perror("socket():");
+	        exit(1);
+	}
+	printf("Cliente Aberto: %i\n", s);
+
+	/*retrieve ethernet interface index*/
+	strncpy(ifr.ifr_name, DEVICE, IFNAMSIZ);
+	if (ioctl(s, SIOCGIFINDEX, &amp;ifr) == -1) {
+		perror("SIOCGIFINDEX");
+		exit(1);
+	}
+	ifindex = ifr.ifr_ifindex;
+	printf("interface index: %i\n", ifindex);
+
+	/*retrieve corresponding MAC*/
+	if (ioctl(s, SIOCGIFHWADDR, &amp;ifr) == -1) {
+		perror("SIOCGIFINDEX");
+		exit(1);
+	}
+        for (i = 0; i &lt; 6; i++) {
+		src_mac[i] = ifr.ifr_hwaddr.sa_data[i];
+	}
+	printf("MAC Cliente: %02X:%02X:%02X:%02X:%02X:%02X\n",
+			src_mac[0],src_mac[1],src_mac[2],src_mac[3],src_mac[4],src_mac[5]);
+
+	/*endereço socket */
+	socket_address.sll_family   = PF_PACKET;
+	socket_address.sll_protocol = htons(ETH_P_IP);
+	socket_address.sll_ifindex  = ifindex;
+	socket_address.sll_hatype   = ARPHRD_ETHER;
+	socket_address.sll_pkttype  = PACKET_OTHERHOST;
+	socket_address.sll_halen    = ETH_ALEN;
+	socket_address.sll_addr[0]  = dest_mac[0];
+	socket_address.sll_addr[1]  = dest_mac[1];
+    socket_address.sll_addr[2]  = dest_mac[2];
+    socket_address.sll_addr[3]  = dest_mac[3];
+    socket_address.sll_addr[4]  = dest_mac[4];
+    socket_address.sll_addr[5]  = dest_mac[5];
+	socket_address.sll_addr[6]  = 0x00;
+	socket_address.sll_addr[7]  = 0x00;
+
+
+	/*establish signal handler*/
+	signal(SIGINT, sigint);
+
+
+	srand(time(NULL));
+
+		allovertime = 0;
+
+		for (k = 0; k &lt; quantidadePacotes; k++) {
+			/*prepare buffer / prepara o buffer*/
+			memcpy((void*)buffer, (void*)dest_mac, ETH_MAC_LEN);
+			memcpy((void*)(buffer+ETH_MAC_LEN), (void*)src_mac, ETH_MAC_LEN);
+			eh-&gt;h_proto = ETH_P_NULL;
+			/*fill it with random data / preenche com dados aleatórios*/
+			for (j = 0; j &lt; i; j++) {
+				data[j] = (unsigned char)((int) (255.0*rand()/(RAND_MAX+1.0)));
+			}
+
+			/*clear the timers / limpa os timers*/
+				timerclear(&amp;begin);
+		        timerclear(&amp;end);
+
+			/*get time before sending / pega a hora antes de enviar*/
+		        gettimeofday(&amp;begin,NULL);
+
+
+			/*send packet / envia o pacote*/
+			sent = sendto(s, buffer, BUF_SIZE, 0, (struct sockaddr*)&amp;socket_address, sizeof(socket_address));
+			if (sent == -1) {
+				perror("sendto():");
+				exit(1);
+			}
+
+			/*Wait for incoming packet / espera por pacotes*/
+			length = recvfrom(s, buffer, BUF_SIZE, 0, NULL, NULL);
+			if (length == -1) {
+				perror("recvfrom():");
+				exit(1);
+			}
+
+			/*get time after sending / pega a hora depois de enviar*/
+			gettimeofday(&amp;end,NULL);
+			/*...and calculate difference.........*/
+			timersub(&amp;end,&amp;begin,&amp;result);
+
+	        tempo[k] = ((result.tv_sec * 1000000 ) + result.tv_usec )/2;
+		    allovertime += ((result.tv_sec * 1000000 ) + result.tv_usec )/2;
+			//tempo[k] = (((end.tv_sec-begin.tv_sec) * 1000000  + end.tv_usec) -  begin.tv_usec)/2;
+			//allovertime += (((end.tv_sec-begin.tv_sec) * 1000000  + end.tv_usec) -  begin.tv_usec)/2;
+			total_sent_packets++;
+		}
+
+		printf("Pacote enviado %i ,Tempo %lld microseconds\n",BUF_SIZE ,allovertime/quantidadePacotes);
+		for(l=0;l&lt;quantidadePacotes;l++){
+
+		printf( " %lld \n", tempo[l]);
+		printf( "\n");
+
+		}
+}
+
+void sigint(int signum) {
+	/*Clean up / Limpar tudo*/
+
+	struct ifreq ifr;
+
+        if (s == -1)
+        	return;
+
+	strncpy(ifr.ifr_name, DEVICE, IFNAMSIZ);
+	ioctl(s, SIOCGIFFLAGS, &amp;ifr);
+	ifr.ifr_flags &amp;= ~IFF_PROMISC;
+	ioctl(s, SIOCSIFFLAGS, &amp;ifr);
+	close(s);
+
+	free(buffer);
+
+	//printf("Client terminating....\n");
+
+	//printf("Totally sent: %d packets\n", total_sent_packets);
+	exit(0);
+}</code></pre>
 </div>
-<div class="title">Figure 1. Original</div>
 </div>
-<div class="imageblock">
+</div>
+</div>
+<div class="sect1">
+<h2 id="trueudp-server"><a class="anchor" href="#trueudp-server"></a>UDP server</h2>
+<div class="sectionbody">
+<div class="listingblock">
 <div class="content">
-<img src="saidaR4-2.png" alt="saidaR4 2.png">
+<pre class="highlightjs highlight"><code class="language-cpp" data-lang="cpp">/*
+  server
+*/
+#include&lt;stdio.h&gt; //printf
+#include&lt;string.h&gt; //memset
+#include&lt;stdlib.h&gt; //exit(0);
+#include&lt;arpa/inet.h&gt;
+#include&lt;sys/socket.h&gt;
+
+//#define BUFLEN 64  //Max length of buffer
+//#define BUFLEN 128  //Max length of buffer
+//#define BUFLEN 256  //Max length of buffer
+//#define BUFLEN 512  //Max length of buffer
+#define BUFLEN 1024  //Max length of buffer
+
+void die(char *s)
+{
+    perror(s);
+    exit(1);
+}
+
+int main(void)
+{
+    int server_sockfd, client_sockfd;
+   	size_t server_len;
+   	socklen_t client_len;
+   	struct sockaddr_in server_address;
+   	struct sockaddr_in client_address;
+	unsigned short porta = 9735;
+    int i, slen = sizeof(client_address) , recv_len;
+    char buf[BUFLEN];
+
+    unlink("server_socket");
+    //create a UDP socket
+	printf("Criando Socket");
+    if ((server_sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) &lt;0)
+    {
+        printf("Erro em criar o socket");
+		die("socket");
+    }
+
+    // zero out the structure
+    memset((char *) &amp;server_address, 0, sizeof(server_address));
+
+    server_address.sin_family = AF_INET;
+    server_address.sin_port = htons(porta);
+    server_address.sin_addr.s_addr = htonl(INADDR_ANY);
+
+
+    //bind socket to port
+	printf("Binding socket");
+    if( bind(server_sockfd, (struct sockaddr*)&amp;server_address, sizeof(server_address) ) &lt;0)
+    {
+        printf("Erro no binding");
+		die("bind");
+    }
+
+    //keep listening for data / verifica constantemente se tem dados pra serem ouvidos
+	while(1){
+		//inicializando buffer
+		memset(buf,0x0,BUFLEN);
+
+    	printf("Esperando dados...");
+
+        //try to receive some data, this is a blocking call / tenta receber algum dado, chamada bloqueante
+        if ((recv_len = recvfrom(server_sockfd, buf, BUFLEN, 0, (struct sockaddr *) &amp;client_address, &amp;slen)) == -1)
+        {
+            printf("Erro em receber data");
+			die("recvfrom()");
+
+        }
+
+        //print details of the client/peer and the data received / mostra detalhes do cliente e os dados recebidos
+        printf("Received packet from %s:%d\n", inet_ntoa(client_address.sin_addr), ntohs(client_address.sin_port));
+        printf("Data: %s\n" , buf);
+
+        //now reply the client with the same data / agora responde o cliente com a mesma data que ele enviou
+        if (sendto(server_sockfd, buf, recv_len, 0, (struct sockaddr*) &amp;client_address, slen) &lt;0)
+        {
+            die("sendto()");
+        }
+	}
+
+    close(server_sockfd);
+    return 0;
+}</code></pre>
 </div>
-<div class="title">Figure 2. Floodfill</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="trueudp-cliente"><a class="anchor" href="#trueudp-cliente"></a>UDP Cliente</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-cpp" data-lang="cpp">/*
+  client
+*/
+#include&lt;stdio.h&gt; //printf
+#include&lt;string.h&gt; //memset
+#include&lt;stdlib.h&gt; //exit(0);
+#include&lt;arpa/inet.h&gt;
+#include&lt;sys/socket.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;netinet/in.h&gt;
+#include &lt;arpa/inet.h&gt;
+#include &lt;netdb.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;string.h&gt; /* memset() */
+#include &lt;sys/time.h&gt; /* select() */
+#include &lt;time.h&gt;
+#include &lt;math.h&gt;
+
+//#define BUFLEN 64  //Max length of buffer
+//#define BUFLEN 128  //Max length of buffer
+//#define BUFLEN 256  //Max length of buffer
+//#define BUFLEN 512  //Max length of buffer
+//#define BUFLEN 1024  //Max length of buffer
+
+void die(char *s)
+{
+    perror(s);
+    exit(1);
+}
+
+int main(int argc, char *argv[])
+{
+    int sockfd;
+   	int len;
+   	socklen_t len_recv;
+   	struct sockaddr_in address, cliAddr;
+    int k, i, j,l, slen=sizeof(address);
+    char buf[BUFLEN];
+    char message[BUFLEN];
+	unsigned short porta = 9735;
+	struct timeval begin;
+    struct timeval end;
+    struct timeval result;
+	unsigned long long somatempo;
+	unsigned long long tempo[1000];
+	FILE *p;
+	char *str="saida.txt";
+
+   	address.sin_family = AF_INET;//The first parameter family specifies the communication protocol used
+    //address.sin_addr.s_addr = inet_addr("192.168.1.107");
+	address.sin_addr.s_addr = inet_addr("192.168.1.102");
+   	address.sin_port = htons(porta);
+
+	// criacao do socket
+	sockfd  = socket(AF_INET, SOCK_DGRAM,IPPROTO_UDP);
+
+	/* bind porta*/
+  	cliAddr.sin_family = AF_INET;
+  	cliAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+  	cliAddr.sin_port = htons(0);
+
+  	if(bind(sockfd, (struct sockaddr *) &amp;cliAddr, sizeof(cliAddr))&lt;0) {
+  	  printf("%s: cannot bind port\n", argv[0]);
+  	  exit(1);
+  	}
+
+   	len = sizeof(address);
+   	len_recv = sizeof(address);
+
+	for(j=0;j&lt;BUFLEN; j++){
+		message[j] = 'A';
+	}
+	somatempo = 0;
+
+    for(i=0;i&lt;=1000;i++){//numero de envios
+
+			timerclear(&amp;begin);
+			timerclear(&amp;end);
+			//timerclear(&amp;result);
+
+			gettimeofday(&amp;begin,NULL);
+
+			sendto(sockfd,  message, sizeof(message),0,(struct sockaddr *) &amp;address, len);
+			recvfrom(sockfd, buf, sizeof(buf),0,(struct sockaddr *) &amp;address, &amp;len_recv);
+
+			gettimeofday(&amp;end,NULL);
+
+			timersub(&amp;end,&amp;begin,&amp;result);
+
+			tempo[i] = ((result.tv_sec * 1000000 ) + result.tv_usec )/2;
+			somatempo+= ((result.tv_sec * 1000000 ) + result.tv_usec )/2;
+
+			//printf( "mensagem = %s \n", message);
+			//printf( "Caracter vindo do servidor = %s \n", buf);
+
+
+   }
+	printf("Sending %i bytes takes %lld microseconds in average\n",i ,somatempo/1000);
+	printf("tempos\n");
+
+	for(k=0;k&lt;1000;k++){
+
+		printf( " %lld \n", tempo[k]);
+		printf( "\n");
+	}
+
+    close(sockfd);
+    return 0;
+}</code></pre>
+</div>
 </div>
 <div class="paragraph">
 <p><a href="index.html">Voltar</a></p>
@@ -607,7 +1025,7 @@ int main(int argc, char** argv){
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-03-03 20:30:50 BRT
+Last updated 2017-03-03 20:28:19 BRT
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">
